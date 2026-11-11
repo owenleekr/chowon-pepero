@@ -398,7 +398,7 @@ console.assert(pick(PRIZES, 0) === PRIZES[0] && pick(PRIZES, 0.9999999) === PRIZ
 
 const load = () => { if (DEMO) return null; try { return JSON.parse(localStorage.getItem(KEY)); } catch { return null; } };
 const save = v => { if (DEMO) return; try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {} };
-function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, Math.max(2600, msg.length * 90)); }
 
 let me = { name:'', prize:null, char:'m1', code:'', gift:null };
 const DEVICE = (() => { const k = KEY + '-device'; let d; try { d = localStorage.getItem(k); } catch {}
