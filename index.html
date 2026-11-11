@@ -36,6 +36,19 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .card > p{ margin:0 0 12px; font-size:14px; color:var(--ink2); word-break:keep-all }
 .field{ width:100%; min-height:54px; font:inherit; font-size:18px; font-weight:700; border:0; border-radius:18px; padding:12px 16px; background:#fff; color:var(--ink);
   box-shadow:inset 0 3px 6px rgba(60,30,20,.13), 0 2px 0 #fff; -webkit-appearance:none }
+.lbl{ margin:16px 0 8px; font-size:14px; font-weight:900; color:var(--ink) }
+.tabs{ display:flex; gap:6px; background:#F3E6CF; border-radius:16px; padding:5px }
+.tabs button{ flex:1; border:0; border-radius:12px; min-height:44px; font-size:15px; font-weight:900; background:transparent; color:var(--ink2); cursor:pointer }
+.tabs button[aria-pressed="true"]{ background:#fff; color:var(--ink); box-shadow:0 3px 0 #E2CFAE }
+.chars{ display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; margin-top:10px }
+.chars button{ border:0; border-radius:18px; background:#fff; padding:6px 2px 4px; cursor:pointer; min-width:0; box-shadow:inset 0 -4px 0 rgba(60,30,20,.06), 0 4px 0 #E3CDA8;
+  transition:transform .16s cubic-bezier(.3,1.7,.5,1) }
+.chars img{ display:block; width:100%; aspect-ratio:3/4; object-fit:contain }
+.chars button[aria-pressed="true"]{ background:#FFE1E8; transform:translateY(-3px); box-shadow:0 7px 0 #E86F86, 0 0 0 3px #FF8FA3 }
+.title img{ width:120px; height:160px; object-fit:contain; margin-bottom:6px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) }
+.res-top img{ display:block; width:96px; height:128px; object-fit:contain; margin:0 auto 6px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.4)) }
+.giftbox{ margin-top:14px; text-align:center }
+.giftbox img{ display:block; width:100%; max-width:300px; margin:0 auto 12px; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,.18) }
 .big{ display:block; width:100%; margin-top:16px; min-height:60px; border:0; border-radius:22px; font-size:18px; font-weight:900; color:var(--ink); cursor:pointer; touch-action:manipulation;
   background:linear-gradient(180deg,#FFC4CF,#FF8FA3); box-shadow:inset 0 -7px 0 rgba(160,40,80,.18), inset 0 5px 0 rgba(255,255,255,.55), 0 7px 0 #D9677C, 0 14px 22px rgba(217,103,124,.3);
   transition:transform .14s cubic-bezier(.3,1.7,.5,1), box-shadow .14s }
@@ -76,7 +89,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .title h2{ margin:14px 0 10px; font-size:32px; font-weight:900; line-height:1.3; word-break:keep-all }
 .title p{ margin:0; font-size:16px; color:rgba(255,255,255,.75); word-break:keep-all }
 .title > *{ opacity:0; transform:translateY(8px); transition:opacity 1.2s ease, transform 1.4s ease }
-.title.on > *{ opacity:1; transform:none } .title.on > :nth-child(2){ transition-delay:.5s } .title.on > :nth-child(3){ transition-delay:1.1s }
+.title.on > *{ opacity:1; transform:none } .title.on > :nth-child(3){ transition-delay:.5s } .title.on > :nth-child(4){ transition-delay:1.1s }
 
 .gift{ position:absolute; width:24%; aspect-ratio:1; transform:translate(-50%,-50%) scale(.6); border:0; border-radius:50%; background:transparent; cursor:pointer; opacity:0; pointer-events:none;
   transition:opacity .8s ease, transform .8s cubic-bezier(.3,1.6,.5,1); z-index:2 }
@@ -168,6 +181,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 #rec{ position:fixed; left:0; top:0; width:2px; height:2px; opacity:0; pointer-events:none }
 
 @media (prefers-reduced-motion: reduce){
+  .chars button{ transition:none }
   .glow, .gift::before, .gift::after, .rays, .prize.float{ animation:none }
   .cap p{ filter:none; transform:none; transition:opacity .6s ease }
   .title > *{ transform:none }
@@ -189,8 +203,13 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   <form id="who" class="card" autocomplete="off">
     <h2>이름을 적어 주세요</h2>
     <p>카드와 스토리 이미지에 들어가요. 한 분께 한 번, 꽝은 없어요.</p>
-    <input id="name" class="field" type="text" maxlength="12" placeholder="내 이름" aria-label="내 이름" enterkeyhint="go">
-    <button class="big" type="submit">이야기 시작하기</button>
+    <input id="name" class="field" type="text" maxlength="12" placeholder="내 이름" aria-label="내 이름" enterkeyhint="next">
+    <p class="lbl">나와 닮은 캐릭터를 골라 주세요</p>
+    <div class="tabs" role="group" aria-label="성별"><button type="button" data-g="m" aria-pressed="true">남자</button><button type="button" data-g="f" aria-pressed="false">여자</button></div>
+    <div class="chars" id="chars"></div>
+    <div id="codeBox"><p class="lbl">참여 코드</p>
+    <input id="code" class="field" type="text" maxlength="20" placeholder="단톡방에서 받은 코드" aria-label="참여 코드" autocomplete="off" enterkeyhint="go"></div>
+    <button class="big" type="submit" id="goBtn">이야기 시작하기</button>
     <p class="note">1분 남짓 걸려요. 화면을 누르면 다음으로 넘어가요.</p>
   </form>
   <p class="foot">초원지역전략연구소 · 2026. 11. 11</p>
@@ -210,7 +229,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
     <div class="prog" id="prog"></div>
     <div class="cap" id="cap" aria-live="polite"></div>
     <p class="skip" id="skip">화면을 누르면 넘어가요</p>
-    <div class="title" id="title"><small>2026. 11. 11</small><h2 id="tname"></h2><p>올해도 참 많이 달려오셨죠.<br>잠깐, 지나온 길을 함께 돌아봐요.</p></div>
+    <div class="title" id="title"><img id="tchar" alt=""><small>2026. 11. 11</small><h2 id="tname"></h2><p>올해도 참 많이 달려오셨죠.<br>잠깐, 지나온 길을 함께 돌아봐요.</p></div>
     <div class="fade" id="fade"></div>
   </div>
 </section>
@@ -235,17 +254,23 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 <!-- 4. 결과 -->
 <main id="result" class="page" hidden>
   <p class="demo" data-demo hidden>시연 모드 · 기록이 남지 않아요</p>
-  <div class="res-top"><small id="resNote">11 · 11 오늘의 선물</small></div>
+  <div class="res-top"><img id="resChar" alt=""><small id="resNote">11 · 11 오늘의 선물</small></div>
   <div class="card">
     <div class="won"><img id="wonImg" alt=""><div><span>꽝 없는 선물</span><img class="wlogo" id="wonLogo" alt=""><b id="wonName"></b><small id="wonSub"></small></div></div>
     <p class="claim" id="claim"></p>
+    <button class="big" type="button" id="giftBtn" style="margin-top:12px">기프티콘 보기·내려받기</button>
+    <div class="giftbox" id="giftBox" hidden>
+      <img id="giftImg" alt="내 기프티콘">
+      <div class="row"><a class="btn gold" id="giftSave" download="chowon-1111-gift.png">이미지 내려받기</a></div>
+      <p class="note">바코드는 나만 보세요. 스토리 이미지·영상에는 들어가지 않아요.</p>
+    </div>
   </div>
   <article class="letter">
     <h3><span data-name></span> 님께</h3>
     <p>누군가의 성장을 돕는 일은 좀처럼 티가 나지 않아요. 먼 길을 다녀오고 밤늦게까지 서류를 붙들어도, 박수는 늘 무대 위의 사람에게 돌아갔죠.</p>
     <p>그래도 저는 알아요. 그 덕분에 바다를 건너간 우리 물건이 있고, 다시 불이 켜진 사업장이 있고, 새 기회를 만나 한 걸음 나아간 분들이 있다는 걸요.</p>
     <p>알아주는 사람이 없어도 묵묵히 해내 주셔서 정말 고맙습니다. <span data-name></span> 님은 누군가에게 희망의 실마리였어요.</p>
-    <p>오늘만큼은 잠깐 숨 돌리고, 달콤한 거 하나 드세요. 앞으로도 곁에서 함께할게요.</p>
+    <p>오늘도 정말 고생했고, 수고했어요. 바쁜 하루지만 붉게 물든 단풍도 한번 보고, 디저트로 달달한 오후 보내세요. 앞으로도 곁에서 함께할게요.</p>
     <p class="sign" id="sign"></p>
   </article>
   <div class="card share">
@@ -275,11 +300,16 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 /* ===== 고칠 수 있는 값 ===== */
 // 경품: 이름·설명·그림·가중치. 가중치가 클수록 잘 나와요(지금은 셋이 같은 확률).
 const PRIZES = [
-  { id:'pepero',   name:'빼빼로',               sub:'오늘 하루 달콤하게, 나눠 드셔도 좋아요.', img:'assets/p-pepero.webp',   logo:'',                               weight:1 },
-  { id:'coffee',   name:'스타벅스 커피',         sub:'따뜻한 한 잔 들고 잠깐 쉬어 가세요.',      img:'assets/p-coffee.webp',   logo:'assets/logo-starbucks.svg',     weight:1 },
-  { id:'icecream', name:'배스킨라빈스 아이스크림', sub:'고른 맛만큼 하루가 즐거워지길 바라요.',    img:'assets/p-icecream.webp', logo:'assets/logo-baskinrobbins.svg', weight:1 },
+  { id:'pepero',   name:'빼빼로 아몬드',          sub:'오늘 하루 달콤하게, 가까운 CU에서 바꿔 드세요.', img:'assets/p-pepero.webp',   logo:'',                               weight:3 },
+  { id:'coffee',   name:'스타벅스 아이스 카페 라떼', sub:'시원한 한 잔 들고 잠깐 쉬어 가세요.',           img:'assets/p-coffee.webp',   logo:'assets/logo-starbucks.svg',     weight:4 },
+  { id:'icecream', name:'배스킨라빈스 싱글레귤러',   sub:'고른 맛만큼 하루가 즐거워지길 바라요.',          img:'assets/p-icecream.webp', logo:'assets/logo-baskinrobbins.svg', weight:6 },
 ];
-const CLAIM = '선물은 따로 보내 드려요. 이 화면이나 스토리 이미지를 캡처해 두세요.';
+// 실제 지급은 서버가 남은 기프티콘(커피 4·아이스크림 6·빼빼로 3) 중에서 정해요. weight는 시연 모드에서만 써요.
+const SOLDOUT = { id:'none', name:'고마운 마음 한가득', sub:'준비한 기프티콘이 모두 나갔어요. 오웬이 따로 챙겨 드릴게요.', img:'assets/p-pepero.webp', logo:'' };
+const CLAIM = '아래 버튼으로 내 기프티콘을 보고 내려받을 수 있어요.';
+const API = 'https://chowon-pepero-api.vercel.app/api/gift';
+const CHARS = { m:['m1', 'm2', 'm3', 'm4'], f:['f1', 'f2', 'f3'] };
+const charSrc = c => `assets/ch-${c}.webp`;
 const SIGN = '2026년 11월 11일 · 오웬 드림';
 const KEY = 'chowon-pepero-1111';
 
@@ -314,7 +344,20 @@ const load = () => { if (DEMO) return null; try { return JSON.parse(localStorage
 const save = v => { if (DEMO) return; try { localStorage.setItem(KEY, JSON.stringify(v)); } catch {} };
 function toast(msg){ const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
 
-let me = { name:'', prize:null };
+let me = { name:'', prize:null, char:'m1', code:'', gift:null };
+const DEVICE = (() => { const k = KEY + '-device'; let d; try { d = localStorage.getItem(k); } catch {}
+  if (!d){ d = [...crypto.getRandomValues(new Uint8Array(12))].map(x => x.toString(16).padStart(2, '0')).join(''); try { localStorage.setItem(k, d); } catch {} }
+  return d; })();
+async function api(action){ // 서버 오류는 err.code 로: code(참여 코드) | taken | soldout | net
+  let r;
+  try { r = await fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action, name:me.name, code:me.code, device:DEVICE }) }); }
+  catch { throw Object.assign(new Error('net'), { code:'net' }); }
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw Object.assign(new Error(j.error || 'net'), { code:j.error || 'net' });
+  return j;
+}
+const ERR = { code:'참여 코드가 맞지 않아요. 단톡방의 코드를 확인해 주세요.', taken:'이미 다른 기기에서 선물을 받은 이름이에요. 오웬에게 알려 주세요.',
+  input:'이름을 다시 확인해 주세요.', net:'연결이 잠깐 끊겼어요. 잠시 뒤 다시 눌러 주세요.', server:'연결이 잠깐 끊겼어요. 잠시 뒤 다시 눌러 주세요.' };
 const pics = {};
 function img(src){ return pics[src] ||= new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(i); i.src = src; }); }
 
@@ -378,14 +421,34 @@ $('#snd').onclick = () => { bgm.muted = !bgm.muted; try { localStorage.setItem(K
 
 /* ===== 시작 ===== */
 document.querySelectorAll('[data-demo]').forEach(e => e.hidden = !DEMO);
-$('#who').onsubmit = e => {
+function drawChars(g){
+  document.querySelectorAll('[data-g]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.g === g)));
+  if (!CHARS[g].includes(me.char)) me.char = CHARS[g][0];
+  $('#chars').innerHTML = CHARS[g].map((c, i) => `<button type="button" data-c="${c}" aria-pressed="${c === me.char}" aria-label="캐릭터 ${i + 1}"><img src="${charSrc(c)}" alt=""></button>`).join('');
+}
+document.querySelectorAll('[data-g]').forEach(b => b.onclick = () => drawChars(b.dataset.g));
+$('#chars').onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; me.char = b.dataset.c;
+  $('#chars').querySelectorAll('[data-c]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); };
+drawChars('m');
+$('#codeBox').hidden = DEMO;
+$('#who').onsubmit = async e => {
   e.preventDefault();
-  const n = $('#name').value.trim().replace(/\s+/g, ' ').slice(0, 12);
+  const n = $('#name').value.trim().replace(/\s+/g, ' ').slice(0, 12), code = $('#code').value.trim();
   if (!n){ toast('이름을 적어 주세요'); $('#name').focus(); return; }
-  me.name = n; bgm.start(); startStory();
+  if (!DEMO && !code){ toast('참여 코드를 적어 주세요'); $('#code').focus(); return; }
+  me.name = n; me.code = code; bgm.start(); // 누른 순간에 켜야 아이폰에서도 소리가 나요
+  if (!DEMO){
+    const b = $('#goBtn'); b.disabled = true; b.textContent = '확인하는 중…';
+    try {
+      const r = await api('check');
+      if (r.prize){ me.prize = PRIZES.find(p => p.id === r.prize); save({ name:me.name, prize:me.prize.id, char:me.char, code:me.code }); showResult(true); return; }
+    } catch (err){ toast(ERR[err.code] || ERR.net); return; }
+    finally { b.disabled = false; b.textContent = '이야기 시작하기'; }
+  }
+  startStory();
 };
 const saved = load();
-if (saved && saved.name){ me = { name:saved.name, prize:PRIZES.find(p => p.id === saved.prize) || PRIZES[0] }; showResult(true); }
+if (saved && saved.name){ me = { ...me, name:saved.name, char:saved.char || 'm1', code:saved.code || '', prize:PRIZES.find(p => p.id === saved.prize) || SOLDOUT }; showResult(true); }
 ACTS.forEach(a => img(a.img));
 
 /* ===== 이야기 진행 ===== */
@@ -403,7 +466,7 @@ async function startStory(){
   $('#intro').hidden = true; $('#result').hidden = true; $('#open').hidden = true; stage.hidden = false;
   prog.innerHTML = '<i><b></b></i>'.repeat(ACTS.length + 1);
   gifts.forEach(g => g.className = 'gift'); choosing = false; busy = false; act = -1; clear(); cap.innerHTML = '';
-  $('#tname').textContent = `${me.name} 님께`;
+  $('#tname').textContent = `${me.name} 님께`; $('#tchar').src = charSrc(me.char);
   const t = $('#title'); t.style.opacity = 1; t.classList.remove('on'); fade.style.transition = 'none'; fade.style.opacity = 0;
   await img(ACTS[0].img);
   requestAnimationFrame(() => t.classList.add('on'));
@@ -451,7 +514,18 @@ gifts.forEach((g, k) => g.addEventListener('click', () => choose(k)));
 /* ===== 선물 고르기 → 상자 열기 ===== */
 async function choose(k){
   if (!choosing || busy) return; busy = true;
-  if (!me.prize){ me.prize = pick(PRIZES, rand()); save({ name:me.name, prize:me.prize.id, at:new Date().toISOString() }); }
+  if (!me.prize){
+    if (DEMO) me.prize = pick(PRIZES, rand());
+    else {
+      const s = $('#skip'); s.textContent = '선물을 여는 중…';
+      try { const r = await api('claim'); me.prize = PRIZES.find(p => p.id === r.prize); me.gift = r.img; }
+      catch (err){
+        if (err.code === 'soldout') me.prize = SOLDOUT;
+        else { toast(ERR[err.code] || ERR.net); s.textContent = '선물 하나를 눌러 받아 보세요'; busy = false; return; }
+      }
+      save({ name:me.name, prize:me.prize.id, char:me.char, code:me.code, at:new Date().toISOString() });
+    }
+  }
   gifts.forEach((g, j) => { if (j !== k) g.classList.add('off'); }); $('#skip').hidden = true; bgm.swell();
   cap.querySelectorAll('p').forEach(p => p.classList.remove('on'));
   // 고른 상자를 화면 가운데로 당겨 온다: translate(t) scale(s), 기준점 O 에서 점 P 가 C 로 가도록
@@ -497,7 +571,7 @@ $('#toCard').onclick = () => { $('#open').hidden = true; showResult(false); };
 /* ===== 결과 ===== */
 function setLogo(el){ el.hidden = !me.prize.logo; if (me.prize.logo){ el.src = me.prize.logo; el.alt = me.prize.name.split(' ')[0] + ' 로고'; } }
 function showResult(returning){
-  setLogo($('#wonLogo'));
+  setLogo($('#wonLogo')); $('#resChar').src = charSrc(me.char); $('#giftBox').hidden = true; $('#giftBtn').hidden = me.prize.id === 'none';
   $('#intro').hidden = true; stage.hidden = true; $('#open').hidden = true; $('#result').hidden = false;
   $('#resNote').textContent = returning ? '이미 열어 본 선물이에요. 다시 보실 수 있게 남겨 뒀어요.' : `오늘 무대의 주인공은 ${me.name} 님이에요`;
   $('#wonImg').src = me.prize.img; $('#wonImg').alt = me.prize.name;
@@ -507,7 +581,17 @@ function showResult(returning){
   scrollTo(0, 0);
 }
 $('#replay').onclick = () => { bgm.start(); startStory(); };
-$('#again').onclick = () => { me = { name:'', prize:null }; $('#result').hidden = true; $('#intro').hidden = false; $('#name').value = ''; scrollTo(0, 0); };
+$('#giftBtn').onclick = async () => {
+  if (DEMO){ toast('시연 모드에서는 기프티콘이 나오지 않아요'); return; }
+  const b = $('#giftBtn');
+  if (!me.gift){ b.disabled = true; b.textContent = '불러오는 중…';
+    try { me.gift = (await api('claim')).img; } catch (err){ toast(ERR[err.code] || ERR.net); }
+    b.disabled = false; b.textContent = '기프티콘 보기·내려받기'; }
+  if (!me.gift) return;
+  $('#giftImg').src = me.gift; $('#giftSave').href = me.gift; $('#giftSave').download = `chowon-1111-${me.prize.id}-${me.name}.png`;
+  $('#giftBox').hidden = false; $('#giftBox').scrollIntoView({ behavior:REDUCE ? 'auto' : 'smooth', block:'center' });
+};
+$('#again').onclick = () => { me = { ...me, name:'', prize:null, gift:null }; $('#result').hidden = true; $('#intro').hidden = false; $('#name').value = ''; scrollTo(0, 0); };
 
 /* ===== 스토리 이미지·영상 (1080×1920) ===== */
 const FONT = getComputedStyle(document.body).fontFamily;
@@ -531,7 +615,7 @@ function wrap(c, s, maxW){ // 띄어쓰기 단위로, 줄 길이를 고르게
 }
 function rrect(c, x, y, w, h, r){ c.beginPath(); c.roundRect(x, y, w, h, r); }
 async function drawStory(c, t, mode = 'short'){
-  const W = 1080, H = 1920, A = await Promise.all(ACTS.map(a => img(a.img))), P = await img(me.prize.img), L = me.prize.logo && await img(me.prize.logo);
+  const W = 1080, H = 1920, A = await Promise.all(ACTS.map(a => img(a.img))), P = await img(me.prize.img), L = me.prize.logo && await img(me.prize.logo), CH = await img(charSrc(me.char));
   const M = MODES[mode], END = M.pre + 4 * M.seg, full = mode === 'full';
   c.save(); c.clearRect(0, 0, W, H); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
   if (t < M.pre){ // 전체 영상의 첫 장: 이름 카드
@@ -539,6 +623,7 @@ async function drawStory(c, t, mode = 'short'){
     const g = c.createRadialGradient(540, 960, 50, 540, 960, 1000); g.addColorStop(0, '#2A1A12'); g.addColorStop(1, '#000');
     c.fillStyle = g; c.fillRect(0, 0, W, H);
     c.globalAlpha = a(.2); text(c, '2026. 11. 11', W / 2, 840, 40, 800, '#FFD9A8');
+    if (CH.naturalWidth){ c.globalAlpha = a(.4); const h = 380, w = CH.naturalWidth * h / CH.naturalHeight; c.drawImage(CH, W / 2 - w / 2, 380, w, h); }
     c.globalAlpha = a(.6); text(c, `${me.name} 님께`, W / 2, 970, 96, 900, '#fff', 940);
     c.globalAlpha = a(1.2); text(c, '올해도 참 많이 달려오셨죠.', W / 2, 1080, 46, 600, 'rgba(255,255,255,.8)', 940);
     c.globalAlpha = a(1.6); text(c, '잠깐, 지나온 길을 함께 돌아봐요.', W / 2, 1145, 46, 600, 'rgba(255,255,255,.8)', 940);
@@ -588,10 +673,14 @@ async function drawStory(c, t, mode = 'short'){
   const gl = c.createRadialGradient(540, cy + 380, 20, 540, cy + 380, 380); gl.addColorStop(0, 'rgba(255,214,140,.75)'); gl.addColorStop(1, 'rgba(255,214,140,0)');
   c.fillStyle = gl; c.fillRect(90, cy, 900, 760);
   // 경품: 로고가 있으면 그림을 조금 줄이고 그 아래에 로고
-  const ps = back(a(.9, .7)), wob = Math.sin(k * 2.2) * .04 * a(1.6, .5), box = L ? 520 : 600;
+  const ps = back(a(.9, .7)), wob = Math.sin(k * 2.2) * .04 * a(1.6, .5), box = L ? 440 : 480;
+  if (CH.naturalWidth){ // 오늘의 주인공 캐릭터
+    const cs = back(a(.6, .7)), h = 520, w = CH.naturalWidth * h / CH.naturalHeight;
+    c.save(); c.translate(320, cy + 660); c.scale(cs, cs); c.drawImage(CH, -w / 2, -h, w, h); c.restore();
+  }
   if (ps > 0 && P.naturalWidth){
     const f = Math.min(box / P.naturalWidth, box / P.naturalHeight), w = P.naturalWidth * f, h = P.naturalHeight * f;
-    c.save(); c.translate(540, cy + (L ? 350 : 390)); c.rotate(-.06 + wob); c.scale(ps, ps); c.drawImage(P, -w / 2, -h / 2, w, h); c.restore();
+    c.save(); c.translate(680, cy + (L ? 360 : 390)); c.rotate(-.06 + wob); c.scale(ps, ps); c.drawImage(P, -w / 2, -h / 2, w, h); c.restore();
   }
   if (L && L.naturalWidth){
     const f = Math.min(220 / L.naturalWidth, 110 / L.naturalHeight), w = L.naturalWidth * f, h = L.naturalHeight * f;
