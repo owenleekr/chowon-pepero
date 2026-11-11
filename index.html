@@ -113,6 +113,16 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .title > *{ opacity:0; transform:translateY(8px); transition:opacity 1.2s ease, transform 1.4s ease }
 .title.on > *{ opacity:1; transform:none } .title.on > :nth-child(3){ transition-delay:.5s } .title.on > :nth-child(4){ transition-delay:1.1s }
 
+.frame img.hero{ inset:auto; width:auto; object-fit:contain; transform:translate(-50%, -100%); filter:drop-shadow(0 1.2vh 1.4vh rgba(0,0,0,.4));
+  opacity:0; transition:opacity .8s ease; animation:bob 1.2s ease-in-out infinite; pointer-events:none }
+.frame img.hero.on{ opacity:1 }
+@keyframes bob{ 0%,100%{ translate:0 0 } 50%{ translate:0 -1.5% } }
+.bub{ position:absolute; transform:translate(-50%, -100%) scale(.4); transform-origin:50% 100%; opacity:0; z-index:2; pointer-events:none;
+  background:#FFFDF6; color:#3A2C22; font-family:"Pen", var(--font); font-size:calc(var(--w) * .064); line-height:1.2; padding:.3em .75em .38em; border-radius:.9em;
+  box-shadow:0 .25em .8em rgba(0,0,0,.32); white-space:nowrap; transition:opacity .35s ease, transform .7s cubic-bezier(.3,1.7,.45,1) }
+.bub::after{ content:""; position:absolute; left:50%; bottom:-.32em; width:.7em; height:.7em; background:inherit; transform:translateX(-50%) rotate(45deg); border-radius:.12em }
+.bub.wide{ white-space:nowrap; text-align:center; font-size:calc(var(--w) * .058) }
+.bub.on{ opacity:1; transform:translate(-50%, -100%) scale(1) }
 .gift{ position:absolute; width:24%; aspect-ratio:1; transform:translate(-50%,-50%) scale(.6); border:0; border-radius:50%; background:transparent; cursor:pointer; opacity:0; pointer-events:none;
   transition:opacity .8s ease, transform .8s cubic-bezier(.3,1.6,.5,1); z-index:2 }
 .gift::before{ content:""; position:absolute; inset:0; border-radius:50%; background:radial-gradient(closest-side, rgba(255,236,170,.65), rgba(255,210,120,.25) 60%, rgba(255,200,100,0));
@@ -210,7 +220,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 #rec{ position:fixed; left:0; top:0; width:2px; height:2px; opacity:0; pointer-events:none }
 
 @media (prefers-reduced-motion: reduce){
-  .chars button{ transition:none }
+  .chars button{ transition:none } .frame img.hero{ animation:none } .bub{ transition:opacity .3s }
   .glow, .gift::before, .gift::after, .rays, .prize.float{ animation:none }
   .cap p{ filter:none; transform:none; transition:opacity .6s ease }
   .title > *{ transform:none }
@@ -249,6 +259,8 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
     <div class="frame" id="frame">
       <img id="shot" alt="">
       <div class="glow" id="glow"></div>
+      <img class="hero" id="hero" alt="">
+      <div class="bub" data-b="0"></div><div class="bub" data-b="1"></div><div class="bub wide" data-b="2"></div>
       <button class="gift" type="button" style="left:30%;top:62%" aria-label="왼쪽 분의 선물"></button>
       <button class="gift" type="button" style="left:53.5%;top:57.5%" aria-label="가운데 분의 선물"></button>
       <button class="gift" type="button" style="left:73%;top:62.5%" aria-label="오른쪽 분의 선물"></button>
@@ -304,11 +316,11 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   </article>
   <div class="card share">
     <h3>인스타그램에 올리기</h3>
-    <p>스토리 크기(1080×1920)로 만들어 드려요. 영상에는 배경 음악도 들어가요.</p>
+    <p>내 캐릭터가 지나온 장면들과 고마운 마음, 편지를 스토리 크기로 담아 드려요. 영상에는 배경 음악도 들어가요.</p>
     <div class="mk">
       <button class="btn gold" type="button" data-mk="img"><b>스토리 이미지</b><small>사진 한 장</small></button>
       <button class="btn" type="button" data-mk="short"><b>짧은 영상</b><small>9초</small></button>
-      <button class="btn" type="button" data-mk="full"><b>전체 영상</b><small>이야기 30초</small></button>
+      <button class="btn" type="button" data-mk="full"><b>전체 영상</b><small>이야기 35초</small></button>
     </div>
     <div class="bar" id="bar" hidden><i id="barI"></i></div>
     <p class="note left" id="mkNote">공유하기에서 인스타그램을 고르면 스토리에 바로 올라가요. 목록에 없으면 내려받은 뒤 올려 주세요.</p>
@@ -339,6 +351,11 @@ const CLAIM = '아래 버튼으로 내 기프티콘을 보고 내려받을 수 �
 const API = 'https://chowon-pepero-api.vercel.app/api/gift';
 const CHARS = { m:['m1', 'm2', 'm3', 'm4'], f:['f1', 'f2', 'f3'] };
 const charSrc = c => `assets/ch-${c}.webp`;
+// 장면마다 내 캐릭터가 서는 자리 [가로 중심 %, 발 위치 %, 키 %] (그림 속 주인공을 덮는 자리)
+const HERO = [[41, 59, 41], [70, 75, 42], [36, 84, 26], [49, 97, 34]];
+// 마지막 장면 말풍선 [가로 %, 꼬리 끝 세로 %]
+const BUBS = [[25, 43], [60, 39], [50, 31]];
+const thanks = () => ['고마워요', '덕분이에요', `${me.name} 님이 없었으면|우리도 성장할 수 없었어요`];
 const SIGN = '2026년 11월 11일 · 오웬 드림';
 const KEY = 'chowon-pepero-1111';
 
@@ -351,7 +368,7 @@ const ACTS = [
   { img:'assets/act3.webp', o:[66,45], s:[1.16,1.0], glow:[78,17],
     lines:['그 밤들이 모여 항구에 불이 켜졌어요.', '우리 물건을 실은 배가 바다를 건너고,|멈춰 있던 사업장에 다시 웃음이 돌았어요.', '박수는 늘 무대 위로 향했지만,|그 길을 밝힌 건 여러분이었어요.'] },
   { img:'assets/act4.webp', o:[50,62], s:[1.14,1.03], glow:[4,20],
-    lines:['앞만 보고 달리느라 미처 몰랐어요.', '뒤돌아보니, 여러분이 도운 분들이|작은 선물을 들고 서 있어요.', '“덕분에 여기까지 왔어요.”'] },
+    lines:['앞만 보고 달리느라 미처 몰랐어요.', '뒤돌아보니, 여러분이 도운 분들이|작은 선물을 들고 서 있어요.'] },
 ];
 
 const $ = s => document.querySelector(s);
@@ -493,7 +510,8 @@ async function startStory(){
   $('#intro').hidden = true; $('#result').hidden = true; $('#open').hidden = true; stage.hidden = false;
   prog.innerHTML = '<i><b></b></i>'.repeat(ACTS.length + 1);
   gifts.forEach(g => g.className = 'gift'); choosing = false; busy = false; act = -1; clear(); cap.innerHTML = '';
-  $('#tname').textContent = `${me.name} 님께`; $('#tchar').src = charSrc(me.char);
+  $('#tname').textContent = `${me.name} 님께`; $('#tchar').src = charSrc(me.char); $('#hero').src = charSrc(me.char);
+  thanks().forEach((t, k) => { const b = document.querySelector(`.bub[data-b="${k}"]`); b.innerHTML = t.replace('|', '<br>'); b.style.left = BUBS[k][0] + '%'; b.style.top = BUBS[k][1] + '%'; b.classList.remove('on'); });
   const t = $('#title'); t.style.opacity = 1; t.classList.remove('on'); fade.style.transition = 'none'; fade.style.opacity = 0;
   await img(ACTS[0].img);
   requestAnimationFrame(() => t.classList.add('on'));
@@ -510,6 +528,9 @@ async function go(i){
   const s0 = REDUCE ? 1.03 : A.s[0], s1 = REDUCE ? 1.03 : A.s[1];
   frame.style.transform = `scale(${s0})`;
   $('#glow').style.left = A.glow[0] + '%'; $('#glow').style.top = A.glow[1] + '%';
+  const H = HERO[i], hero = $('#hero'); hero.classList.remove('on');
+  Object.assign(hero.style, { left:H[0] + '%', top:H[1] + '%', height:H[2] + '%', filter:i === 1 ? 'brightness(.82) saturate(.9) drop-shadow(0 1.2vh 1.4vh rgba(0,0,0,.4))' : '' });
+  document.querySelectorAll('.bub').forEach(b => b.classList.remove('on'));
   cap.innerHTML = A.lines.map((l, k) => `<p class="${k === A.lines.length - 1 && i >= 2 ? 'em' : ''}">${l.replace('|', '<br>')}</p>`).join('');
   const dur = LINE_T0 + A.lines.length * LINE_GAP + HOLD;
   frame.offsetWidth;
@@ -518,13 +539,16 @@ async function go(i){
   bar(i + 1, dur); $('#skip').hidden = i === ACTS.length - 1; $('#skip').className = 'skip'; $('#skip').textContent = '화면을 누르면 넘어가요';
   busy = false;
   A.lines.forEach((_, k) => later(showLine, LINE_T0 + k * LINE_GAP));
-  later(next, i < ACTS.length - 1 ? dur : LINE_T0 + A.lines.length * LINE_GAP);
+  later(() => hero.classList.add('on'), REDUCE ? 0 : 500);
+  if (i < ACTS.length - 1) later(next, dur);
+  else { const t0 = LINE_T0 + A.lines.length * LINE_GAP; [0, 1, 2].forEach(k => later(() => showBub(k), t0 + k * 1100)); later(offerGifts, t0 + 3 * 1100 + 900); }
 }
+function showBub(k){ document.querySelector(`.bub[data-b="${k}"]`).classList.add('on'); }
 function showLine(){ const ps = cap.children; if (shown < ps.length) ps[shown++].classList.add('on'); }
 function next(){ if (act < ACTS.length - 1) go(act + 1); else offerGifts(); }
 function offerGifts(){
   if (choosing) return; choosing = true; clear();
-  [...cap.children].forEach(p => p.classList.add('on')); shown = cap.children.length;
+  [...cap.children].forEach(p => p.classList.add('on')); shown = cap.children.length; [0, 1, 2].forEach(showBub);
   gifts.forEach((g, k) => setTimeout(() => g.classList.add('on'), 150 * k));
   const s = $('#skip'); s.textContent = '선물 하나를 눌러 받아 보세요'; s.className = 'skip ask'; s.hidden = false;
 }
@@ -533,7 +557,7 @@ stage.addEventListener('click', e => {
   if (act < 0){ clear(); go(0); return; }
   const ps = cap.children;
   if (shown < ps.length){ clear(); while (shown < ps.length) showLine();
-    if (act < ACTS.length - 1) later(next, HOLD); else later(offerGifts, 700); return; }
+    if (act < ACTS.length - 1) later(next, HOLD); else { [0, 1, 2].forEach(k => later(() => showBub(k), 300 + k * 600)); later(offerGifts, 2400); } return; }
   next();
 });
 gifts.forEach((g, k) => g.addEventListener('click', () => choose(k)));
@@ -554,6 +578,7 @@ async function choose(k){
     }
   }
   gifts.forEach((g, j) => { if (j !== k) g.classList.add('off'); }); $('#skip').hidden = true; bgm.swell();
+  document.querySelectorAll('.bub').forEach(b => b.classList.remove('on'));
   cap.querySelectorAll('p').forEach(p => p.classList.remove('on'));
   // 고른 상자를 화면 가운데로 당겨 온다: translate(t) scale(s), 기준점 O 에서 점 P 가 C 로 가도록
   const g = gifts[k], W = frame.offsetWidth, H = frame.offsetHeight, view = frame.parentElement;
@@ -622,15 +647,16 @@ $('#again').onclick = () => { me = { ...me, name:'', prize:null, gift:null }; $(
 
 /* ===== 스토리 이미지·영상 (1080×1920) ===== */
 const FONT = getComputedStyle(document.body).fontFamily;
-const MODES = { short:{ pre:0, seg:1.2, sec:9 }, full:{ pre:3.4, seg:5.4, sec:3.4 + 4 * 5.4 + 6.5 } };
+// 공유 영상: (전체만) 이름 카드 → 장면 4개(내 캐릭터가 주인공 자리에, 마지막 장면엔 고마움 말풍선) → 폴라로이드·편지 콜라주
+// 공유 이미지 = 콜라주 마지막 모습. 경품은 넣지 않는다(기프티콘은 결과 화면 버튼으로만).
+const MODES = { short:{ pre:0, segs:[1.1, 1.1, 1.1, 2.8], end:2.9 }, full:{ pre:3.4, segs:[5.4, 5.4, 5.4, 8.2], end:7 } };
+Object.values(MODES).forEach(m => m.sec = m.pre + m.segs.reduce((a, b) => a + b, 0) + m.end);
+const PEN = `"Pen", ${FONT}`;
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const back = x => { const c = 1.7; return 1 + (c + 1) * Math.pow(x - 1, 3) + c * Math.pow(x - 1, 2); };
-function cover(c, im, z, ox = .5, oy = .5){ // 9:16 그림을 화면 가득, z배 확대(기준점 ox, oy)
-  const W = 1080, H = 1920, w = W * z, h = H * z; c.drawImage(im, (W - w) * ox, (H - h) * oy, w, h);
-}
-function text(c, s, x, y, size, weight, color, maxW){
-  let f = size; c.font = `${weight} ${f}px ${FONT}`;
-  while (maxW && c.measureText(s).width > maxW && f > 20){ f -= 2; c.font = `${weight} ${f}px ${FONT}`; }
+function text(c, s, x, y, size, weight, color, maxW, font = FONT){
+  let f = size; c.font = `${weight} ${f}px ${font}`;
+  while (maxW && c.measureText(s).width > maxW && f > 20){ f -= 2; c.font = `${weight} ${f}px ${font}`; }
   c.fillStyle = color; c.fillText(s, x, y);
 }
 function wrap(c, s, maxW){ // 띄어쓰기 단위로, 줄 길이를 고르게
@@ -641,97 +667,127 @@ function wrap(c, s, maxW){ // 띄어쓰기 단위로, 줄 길이를 고르게
   out.push(cur); return out;
 }
 function rrect(c, x, y, w, h, r){ c.beginPath(); c.roundRect(x, y, w, h, r); }
+function bubble(c, s, x, y, size, pop){ // (x, y)는 꼬리 끝
+  if (pop <= 0) return;
+  const lines = s.split('|'); c.font = `${size}px ${PEN}`;
+  const w = Math.max(...lines.map(l => c.measureText(l).width)) + size * 1.4, h = lines.length * size * 1.2 + size * .7;
+  c.save(); c.translate(x, y); c.scale(back(pop), back(pop)); c.globalAlpha *= clamp(pop * 2);
+  c.shadowColor = 'rgba(0,0,0,.32)'; c.shadowBlur = size * .6; c.shadowOffsetY = size * .2; c.fillStyle = '#FFFDF6';
+  rrect(c, -w / 2, -h - size * .35, w, h, size * .8); c.fill();
+  c.beginPath(); c.moveTo(-size * .35, -size * .4); c.lineTo(0, 0); c.lineTo(size * .35, -size * .4); c.fill();
+  c.shadowColor = 'transparent'; c.fillStyle = '#3A2C22'; c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  lines.forEach((l, k) => c.fillText(l, 0, -h - size * .35 + size * (.35 + .95) + k * size * 1.2));
+  c.restore();
+}
+// 장면 하나: 그림(확대 z, 기준점 A.o) + 내 캐릭터 + (마지막 장면) 말풍선
+function scene(c, i, A, CH, z, t, bub){
+  const W = 1080, H = 1920, o = ACTS[i].o;
+  c.save(); c.translate((W - W * z) * o[0] / 100, (H - H * z) * o[1] / 100); c.scale(z, z);
+  c.drawImage(A[i], 0, 0, W, H);
+  if (CH.naturalWidth){
+    const [cx, by, hp] = HERO[i], h = H * hp / 100, w = CH.naturalWidth * h / CH.naturalHeight, bob = REDUCE ? 0 : Math.sin(t * 5.5) * 9;
+    c.save(); c.shadowColor = 'rgba(0,0,0,.38)'; c.shadowBlur = 28; c.shadowOffsetY = 14;
+    c.drawImage(CH, W * cx / 100 - w / 2, H * by / 100 - h + bob, w, h); c.restore();
+    if (i === 1){ c.fillStyle = 'rgba(20,30,70,.18)'; c.fillRect(W * cx / 100 - w / 2, H * by / 100 - h + bob, w, h); } // 밤 장면 톤 맞춤
+  }
+  if (bub) thanks().forEach((s, k) => bubble(c, s, W * BUBS[k][0] / 100, H * BUBS[k][1] / 100, k === 2 ? 58 : 64, bub[k]));
+  c.restore();
+}
+const polaroidCache = {};
+function polaroids(A, CH){ // 장면 3장을 정사각 사진으로(캐릭터 포함) 한 번만 만든다
+  const key = me.char; if (polaroidCache[key]) return polaroidCache[key];
+  return polaroidCache[key] = [0, 1, 2].map(i => {
+    const full = document.createElement('canvas'); full.width = 1080; full.height = 1920; scene(full.getContext('2d'), i, A, CH, 1, 0, null);
+    const [cx, by, hp] = HERO[i], side = 900, sx = clamp(1080 * cx / 100 - side / 2, 0, 1080 - side), sy = clamp(1920 * (by - hp * .55) / 100 - side / 2, 0, 1920 - side);
+    const sq = document.createElement('canvas'); sq.width = sq.height = 520; sq.getContext('2d').drawImage(full, sx, sy, side, side, 0, 0, 520, 520); return sq;
+  });
+}
+function collage(c, k, A, CH, sp){ // k: 콜라주가 시작된 뒤 초, sp: 빠르기(짧은 영상은 빠르게)
+  const W = 1080, H = 1920, a = (s, d = .5) => clamp((k - s * sp) / (d * sp));
+  c.fillStyle = '#1E140F'; c.fillRect(0, 0, W, H);
+  c.globalAlpha = a(0, .6); c.drawImage(A[3], 0, 0, W, H);
+  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'rgba(24,14,9,.82)'); g.addColorStop(.5, 'rgba(24,14,9,.6)'); g.addColorStop(1, 'rgba(24,14,9,.86)');
+  c.fillStyle = g; c.fillRect(0, 0, W, H); c.globalAlpha = 1;
+  c.textAlign = 'center'; c.textBaseline = 'alphabetic';
+  c.globalAlpha = a(.1, .6); text(c, '11 · 11', W / 2, 150, 38, 800, '#FFD9A8');
+  text(c, `고생 많았어요, ${me.name} 님`, W / 2, 262, 96, 400, '#fff', 960, PEN); c.globalAlpha = 1;
+  // 폴라로이드 세 장
+  const P = polaroids(A, CH), caps = ['전국을 누비고', '밤을 새우고', '항구에 불을 밝히고'], rot = [-.12, .03, .1], xs = [240, 540, 840];
+  P.forEach((ph, i) => { const e = back(a(.35 + i * .22, .6)); if (e <= 0) return;
+    c.save(); c.translate(xs[i], 560 + (1 - e) * 120); c.rotate(rot[i] * (2 - e)); c.globalAlpha = clamp(e * 1.5);
+    c.shadowColor = 'rgba(0,0,0,.45)'; c.shadowBlur = 30; c.shadowOffsetY = 14; c.fillStyle = '#FFFDF8'; c.fillRect(-150, -185, 300, 370); c.shadowColor = 'transparent';
+    c.drawImage(ph, -134, -169, 268, 268);
+    c.font = `40px ${PEN}`; c.fillStyle = '#3A2C22'; c.fillText(caps[i], 0, 150); c.restore(); });
+  // 고마움 말풍선
+  const T = thanks();
+  bubble(c, T[0], 270, 905, 62, a(1.2, .6)); bubble(c, T[1], 810, 935, 62, a(1.5, .6)); bubble(c, T[2], 540, 1090, 56, a(1.8, .7));
+  // 손글씨 편지
+  const e = a(2.3, .7); if (e > 0){
+    c.save(); c.globalAlpha = e; c.translate(540, 1400 + (1 - e) * 60); c.rotate(-.018);
+    c.shadowColor = 'rgba(0,0,0,.4)'; c.shadowBlur = 34; c.shadowOffsetY = 16; c.fillStyle = '#FFFBF1'; c.fillRect(-440, -265, 880, 590); c.shadowColor = 'transparent';
+    c.fillStyle = 'rgba(255,183,196,.8)'; c.save(); c.rotate(-.05); c.fillRect(-70, -282, 140, 34); c.restore();
+    c.strokeStyle = 'rgba(170,140,100,.28)'; c.lineWidth = 2; for (let y = -175; y < 300; y += 62){ c.beginPath(); c.moveTo(-405, y); c.lineTo(405, y); c.stroke(); }
+    c.textAlign = 'left'; c.fillStyle = '#3A2C22';
+    c.font = `52px ${PEN}`; c.fillText(`${me.name} 님께`, -395, -190);
+    c.font = `44px ${PEN}`;
+    const body = ['누군가의 성장을 돕는 일은 좀처럼 티가 나지 않아요.', '먼 길을 다녀오고 밤늦게까지 서류를 붙들어도, 박수는 늘 무대 위로 향했죠.',
+      `그래도 저는 알아요. 그 뒤에는 늘 ${me.name} 님이 있었다는 걸요.`, '오늘은 단풍도 보고, 달달한 오후 보내세요. 늘 고맙습니다.'].flatMap(l => l.split('|')).flatMap(l => wrap(c, l, 800));
+    body.slice(0, 7).forEach((l, n) => c.fillText(l, -395, -128 + n * 62));
+    c.textAlign = 'right'; c.font = `40px ${PEN}`; c.fillStyle = '#6B5446'; c.fillText('오웬 드림', 395, 300);
+    c.restore();
+  }
+  c.globalAlpha = a(2.8, .6); text(c, '초원지역전략연구소', W / 2, 1806, 44, 900, '#fff'); text(c, '2026. 11. 11', W / 2, 1858, 30, 700, '#FFD9A8'); c.globalAlpha = 1;
+}
 async function drawStory(c, t, mode = 'short'){
-  const W = 1080, H = 1920, A = await Promise.all(ACTS.map(a => img(a.img))), P = await img(me.prize.img), L = me.prize.logo && await img(me.prize.logo), CH = await img(charSrc(me.char));
-  const M = MODES[mode], END = M.pre + 4 * M.seg, full = mode === 'full';
+  const W = 1080, H = 1920, A = await Promise.all(ACTS.map(a => img(a.img))), CH = await img(charSrc(me.char));
+  await document.fonts.load(`44px ${PEN}`).catch(() => {});
+  const M = MODES[mode], full = mode === 'full', END = M.pre + M.segs.reduce((a, b) => a + b, 0);
   c.save(); c.clearRect(0, 0, W, H); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
-  if (t < M.pre){ // 전체 영상의 첫 장: 이름 카드
+  if (t < M.pre){ // 전체 영상 첫 장: 이름 카드
     const a = (s, d = .8) => clamp((t - s) / d) * clamp((M.pre - t) / .5);
     const g = c.createRadialGradient(540, 960, 50, 540, 960, 1000); g.addColorStop(0, '#2A1A12'); g.addColorStop(1, '#000');
     c.fillStyle = g; c.fillRect(0, 0, W, H);
-    c.globalAlpha = a(.2); text(c, '2026. 11. 11', W / 2, 840, 40, 800, '#FFD9A8');
     if (CH.naturalWidth){ c.globalAlpha = a(.4); const h = 380, w = CH.naturalWidth * h / CH.naturalHeight; c.drawImage(CH, W / 2 - w / 2, 380, w, h); }
+    c.globalAlpha = a(.2); text(c, '2026. 11. 11', W / 2, 840, 40, 800, '#FFD9A8');
     c.globalAlpha = a(.6); text(c, `${me.name} 님께`, W / 2, 970, 96, 900, '#fff', 940);
     c.globalAlpha = a(1.2); text(c, '올해도 참 많이 달려오셨죠.', W / 2, 1080, 46, 600, 'rgba(255,255,255,.8)', 940);
     c.globalAlpha = a(1.6); text(c, '잠깐, 지나온 길을 함께 돌아봐요.', W / 2, 1145, 46, 600, 'rgba(255,255,255,.8)', 940);
     c.restore(); return;
   }
   if (t < END){
-    const seg = M.seg, tt = t - M.pre, i = Math.min(3, Math.floor(tt / seg)), lt = tt - i * seg, xf = full ? .8 : .35;
+    let tt = t - M.pre, i = 0; while (i < 3 && tt >= M.segs[i]){ tt -= M.segs[i]; i++; }
+    const seg = M.segs[i], lt = tt, xf = full ? .8 : .35, z = full ? .1 : .07;
     c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
-    const z = full ? .1 : .08;
-    if (i > 0 && lt < xf){ cover(c, A[i - 1], 1 + z, ACTS[i - 1].o[0] / 100, ACTS[i - 1].o[1] / 100); c.globalAlpha = lt / xf; }
-    cover(c, A[i], 1 + z * (lt / seg), ACTS[i].o[0] / 100, ACTS[i].o[1] / 100); c.globalAlpha = 1;
-    const g = c.createLinearGradient(0, H * (full ? .42 : .55), 0, H); g.addColorStop(0, 'rgba(10,6,4,0)'); g.addColorStop(1, 'rgba(10,6,4,.88)');
+    // 마지막 장면 말풍선: 짧은 영상은 빨리, 전체 영상은 자막 뒤에
+    const bubT = full ? [3.4, 4.5, 5.6] : [.3, .8, 1.3], bub = i === 3 ? bubT.map(s => clamp((lt - s) / .6)) : null;
+    if (i > 0 && lt < xf){ scene(c, i - 1, A, CH, 1 + z, t, i - 1 === 3 ? [1, 1, 1] : null); c.globalAlpha = lt / xf; }
+    scene(c, i, A, CH, 1 + z * (lt / seg), t, bub); c.globalAlpha = 1;
+    const g = c.createLinearGradient(0, H * (full ? .5 : .6), 0, H); g.addColorStop(0, 'rgba(10,6,4,0)'); g.addColorStop(1, 'rgba(10,6,4,.85)');
     c.fillStyle = g; c.fillRect(0, 0, W, H);
     if (!full){
-      const caps = ['전국을 누비고', '밤을 새우고', '항구에 불을 밝히고', '뒤돌아보니, 고마운 손길'];
-      c.globalAlpha = clamp(lt / .4) * (i === 3 ? 1 : clamp((seg - lt) / .25));
-      text(c, caps[i], W / 2, H - 260, 62, 800, '#fff', 940);
+      const caps = ['전국을 누비고', '밤을 새우고', '항구에 불을 밝히고', '뒤돌아보니, 고마운 얼굴들'];
+      c.globalAlpha = clamp(lt / .35) * (i === 3 ? 1 : clamp((seg - lt) / .25));
+      text(c, caps[i], W / 2, H - 200, 62, 800, '#fff', 940);
     } else {
-      c.font = `700 52px ${FONT}`; c.shadowColor = 'rgba(0,0,0,.6)'; c.shadowBlur = 18;
-      const lines = ACTS[i].lines, blocks = lines.map(l => l.split('|').flatMap(part => wrap(c, part, 900))), LH = 70, GAP = 22;
-      let y = H - 230 - (blocks.flat().length * LH + (blocks.length - 1) * GAP) + LH;
+      c.font = `700 50px ${FONT}`; c.shadowColor = 'rgba(0,0,0,.6)'; c.shadowBlur = 18;
+      const lines = ACTS[i].lines, blocks = lines.map(l => l.split('|').flatMap(part => wrap(c, part, 900))), LH = 66, GAP = 20;
+      let y = H - 150 - (blocks.flat().length * LH + (blocks.length - 1) * GAP) + LH;
       blocks.forEach((rows, k) => {
         c.globalAlpha = clamp((lt - .5 - k * 1.4) / .7);
-        c.fillStyle = k === lines.length - 1 && i >= 2 ? '#FFD9A8' : '#fff';
+        c.fillStyle = k === lines.length - 1 && i === 2 ? '#FFD9A8' : '#fff';
         rows.forEach(r => { c.fillText(r, W / 2, y); y += LH; }); y += GAP;
       });
       c.shadowColor = 'transparent';
-      if (tt < .6){ c.globalAlpha = 1; c.fillStyle = `rgba(0,0,0,${1 - tt / .6})`; c.fillRect(0, 0, W, H); }
+      if (tt < .6 && i === 0){ c.globalAlpha = 1; c.fillStyle = `rgba(0,0,0,${1 - tt / .6})`; c.fillRect(0, 0, W, H); }
     }
     c.globalAlpha = 1;
-    if (t > END - .5){ c.fillStyle = `rgba(0,0,0,${(t - (END - .5)) / .5})`; c.fillRect(0, 0, W, H); }
+    if (t > END - .4){ c.fillStyle = `rgba(0,0,0,${(t - (END - .4)) / .4})`; c.fillRect(0, 0, W, H); }
     c.restore(); return;
   }
-  const k = t - END, a = (s, d = .5) => clamp((k - s) / d);
-  c.fillStyle = '#120A07'; c.fillRect(0, 0, W, H);
-  c.globalAlpha = a(0, .5); cover(c, A[2], 1.12 - .06 * clamp(k / 4.2), .66, .45);
-  const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'rgba(18,10,7,.55)'); g.addColorStop(.45, 'rgba(18,10,7,.35)'); g.addColorStop(1, 'rgba(18,10,7,.9)');
-  c.fillStyle = g; c.fillRect(0, 0, W, H);
-  c.globalAlpha = a(.2, .6); text(c, '11 · 11  오늘의 주인공', W / 2, 240, 40, 800, '#FFD9A8');
-  text(c, `${me.name} 님`, W / 2, 340, 86, 900, '#fff', 920);
-  // 점토 카드
-  const cy = 440 + 320 * (1 - back(a(.3, .8))), ca = a(.3, .4);
-  c.globalAlpha = ca;
-  rrect(c, 90, cy + 18, 900, 1130, 64); c.fillStyle = '#E3C79C'; c.fill();
-  c.shadowColor = 'rgba(0,0,0,.35)'; c.shadowBlur = 60; c.shadowOffsetY = 30;
-  rrect(c, 90, cy, 900, 1130, 64); c.fillStyle = '#FFF7EA'; c.fill(); c.shadowColor = 'transparent';
-  const gl = c.createRadialGradient(540, cy + 380, 20, 540, cy + 380, 380); gl.addColorStop(0, 'rgba(255,214,140,.75)'); gl.addColorStop(1, 'rgba(255,214,140,0)');
-  c.fillStyle = gl; c.fillRect(90, cy, 900, 760);
-  // 경품: 로고가 있으면 그림을 조금 줄이고 그 아래에 로고
-  const ps = back(a(.9, .7)), wob = Math.sin(k * 2.2) * .04 * a(1.6, .5), box = L ? 440 : 480;
-  if (CH.naturalWidth){ // 오늘의 주인공 캐릭터
-    const cs = back(a(.6, .7)), h = 520, w = CH.naturalWidth * h / CH.naturalHeight;
-    c.save(); c.translate(320, cy + 660); c.scale(cs, cs); c.drawImage(CH, -w / 2, -h, w, h); c.restore();
-  }
-  if (ps > 0 && P.naturalWidth){
-    const f = Math.min(box / P.naturalWidth, box / P.naturalHeight), w = P.naturalWidth * f, h = P.naturalHeight * f;
-    c.save(); c.translate(680, cy + (L ? 360 : 390)); c.rotate(-.06 + wob); c.scale(ps, ps); c.drawImage(P, -w / 2, -h / 2, w, h); c.restore();
-  }
-  if (L && L.naturalWidth){
-    const f = Math.min(220 / L.naturalWidth, 110 / L.naturalHeight), w = L.naturalWidth * f, h = L.naturalHeight * f;
-    c.save(); c.globalAlpha = ca * a(1.3); c.drawImage(L, 540 - w / 2, cy + 720 - h / 2, w, h); c.restore();
-  }
-  // 반짝이
-  c.fillStyle = '#FFD27A';
-  [[200, 160, 0], [880, 220, 1.3], [220, 620, 2.1], [860, 600, .7], [540, 90, 1.8]].forEach(([x, y, ph]) => {
-    const s = (Math.sin(k * 3 + ph) * .5 + .5) * a(1.6, .5) * 22; if (s < 1) return;
-    c.beginPath(); for (let j = 0; j < 8; j++){ const r = j % 2 ? s * .32 : s, an = j * Math.PI / 4; c.lineTo(x + Math.cos(an) * r, cy + y + Math.sin(an) * r); } c.fill();
-  });
-  c.globalAlpha = ca * a(1.5);
-  rrect(c, 390, cy + 790, 300, 58, 29); c.fillStyle = '#FFE08A'; c.fill();
-  text(c, '오늘의 선물', 540, cy + 832, 32, 900, '#2B2018');
-  text(c, me.prize.name, 540, cy + 935, 66, 900, '#2B2018', 800);
-  c.globalAlpha = ca * a(1.9);
-  text(c, '희망의 실마리가 되어 주셔서', 540, cy + 1025, 42, 700, '#6B5446', 800);
-  text(c, '늘 고맙습니다', 540, cy + 1082, 42, 700, '#6B5446', 800);
-  c.globalAlpha = a(2.3);
-  text(c, '초원지역전략연구소', W / 2, 1745, 48, 900, '#fff');
-  text(c, '2026. 11. 11', W / 2, 1806, 32, 700, '#FFD9A8');
+  collage(c, t - END, A, CH, full ? 1 : .55);
   c.restore();
 }
-const LABEL = { img:'스토리 이미지', short:'짧은 영상 (9초)', full:'전체 영상 (이야기 30초)' };
+const LABEL = { img:'스토리 이미지', short:'짧은 영상 (9초)', full:'전체 영상 (이야기 35초)' };
 function offer(blob, ext, kind){ // 만든 것마다 미리보기 + 공유 + 내려받기
   const file = new File([blob], `chowon-1111-${kind}-${me.name}.${ext}`, { type:blob.type }), url = URL.createObjectURL(blob);
   document.querySelector(`.out[data-k="${kind}"]`)?.remove();
