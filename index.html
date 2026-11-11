@@ -46,6 +46,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .chars img{ display:block; width:100%; aspect-ratio:3/4; object-fit:contain }
 .chars button[aria-pressed="true"]{ background:#FFE1E8; transform:translateY(-3px); box-shadow:0 7px 0 #E86F86, 0 0 0 3px #FF8FA3 }
 .title img{ width:120px; height:160px; object-fit:contain; margin-bottom:6px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) }
+.replay-top{ display:flex; margin:12px auto 0; max-width:240px; min-height:46px; background:rgba(255,255,255,.92) }
 .res-top img{ display:block; width:96px; height:128px; object-fit:contain; margin:0 auto 6px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.4)) }
 .giftbox{ margin-top:22px; text-align:center }
 .giftbox img{ display:block; width:100%; max-width:300px; margin:0 auto 12px; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,.18) }
@@ -293,7 +294,8 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 <!-- 4. 결과 -->
 <main id="result" class="page" hidden>
   <p class="demo" data-demo hidden>시연 모드 · 기록이 남지 않아요</p>
-  <div class="res-top"><img id="resChar" alt=""><small id="resNote">11 · 11 오늘의 선물</small></div>
+  <div class="res-top"><img id="resChar" alt=""><small id="resNote">11 · 11 오늘의 선물</small>
+    <button class="btn replay-top" type="button" id="replayTop">처음부터 다시 보기</button></div>
   <div class="card">
     <div class="won"><img id="wonImg" alt=""><div><span>꽝 없는 선물</span><img class="wlogo" id="wonLogo" alt=""><b id="wonName"></b><small id="wonSub"></small></div></div>
     <p class="claim" id="claim"></p>
@@ -326,7 +328,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
     <div id="outs"></div>
   </div>
   <div class="row" style="margin-top:22px">
-    <button class="btn" type="button" id="replay">이야기 다시 보기</button>
+    <button class="btn" type="button" id="replay">처음부터 다시 보기</button>
     <button class="btn" type="button" id="again" hidden>처음부터 다시 (시연)</button>
   </div>
   <div class="card pickle">
@@ -491,6 +493,7 @@ $('#who').onsubmit = async e => {
   const n = $('#name').value.trim().replace(/\s+/g, ' ').slice(0, 12);
   if (!n){ toast('이름을 적어 주세요'); $('#name').focus(); return; }
   me.name = n; bgm.start(); // 누른 순간에 켜야 아이폰에서도 소리가 나요
+  if (me.prize){ save({ name:me.name, prize:me.prize.id, char:me.char, at:new Date().toISOString() }); startStory(); return; } // 다시 보기
   if (!DEMO){
     const b = $('#goBtn'); b.disabled = true; b.textContent = '확인하는 중…';
     try {
@@ -632,13 +635,21 @@ function showResult(returning){
   $('#intro').hidden = true; stage.hidden = true; $('#open').hidden = true; $('#result').hidden = false;
   $('#resNote').textContent = returning ? '이미 열어 본 선물이에요. 다시 보실 수 있게 남겨 뒀어요.' : `오늘 무대의 주인공은 ${me.name} 님이에요`;
   $('#wonImg').src = me.prize.img; $('#wonImg').alt = me.prize.name;
-  $('#wonName').textContent = me.prize.name; $('#wonSub').textContent = me.prize.sub; $('#claim').textContent = CLAIM;
+  $('#wonName').textContent = me.prize.name; $('#wonSub').textContent = me.prize.sub; $('#claim').textContent = CLAIM; $('#claim').hidden = me.prize.id === 'none';
   document.querySelectorAll('[data-name]').forEach(e => e.textContent = me.name); $('#sign').textContent = SIGN;
   $('#again').hidden = !DEMO; $('#outs').innerHTML = ''; $('#bar').hidden = true;
   scrollTo(0, 0);
 }
 $('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText('7NBH66'); toast('초대 코드를 복사했어요'); } catch { toast('초대 코드: 7NBH66'); } };
-$('#replay').onclick = () => { bgm.start(); startStory(); };
+function replayFromStart(){ // 이미 받은 분: 첫 화면부터 다시. 새 기프티콘은 나가지 않는다
+  $('#result').hidden = true; $('#intro').hidden = false;
+  const nm = $('#name'); nm.value = me.name; nm.readOnly = true;
+  drawChars(CHARS.f.includes(me.char) ? 'f' : 'm');
+  $('#goBtn').textContent = '다시 보기 시작';
+  $('#intro .card > p').textContent = '받은 선물은 그대로예요. 이야기를 처음부터 다시 볼 수 있어요.';
+  scrollTo(0, 0);
+}
+$('#replay').onclick = replayFromStart; $('#replayTop').onclick = replayFromStart;
 $('#giftBtn').onclick = async () => {
   if (DEMO){ toast('시연 모드에서는 기프티콘이 나오지 않아요'); return; }
   const b = $('#giftBtn');
@@ -649,7 +660,7 @@ $('#giftBtn').onclick = async () => {
   $('#giftImg').src = me.gift; $('#giftSave').href = me.gift; $('#giftSave').download = `chowon-1111-${me.prize.id}-${me.name}.png`;
   $('#giftBox').hidden = false; $('#giftBox').scrollIntoView({ behavior:REDUCE ? 'auto' : 'smooth', block:'center' });
 };
-$('#again').onclick = () => { me = { ...me, name:'', prize:null, gift:null }; $('#result').hidden = true; $('#intro').hidden = false; $('#name').value = ''; scrollTo(0, 0); };
+$('#again').onclick = () => { me = { ...me, name:'', prize:null, gift:null }; $('#result').hidden = true; $('#intro').hidden = false; $('#name').value = ''; $('#name').readOnly = false; $('#goBtn').textContent = '이야기 시작하기'; scrollTo(0, 0); };
 
 /* ===== 스토리 이미지·영상 (1080×1920) ===== */
 const FONT = getComputedStyle(document.body).fontFamily;
