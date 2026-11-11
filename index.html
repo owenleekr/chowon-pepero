@@ -412,7 +412,7 @@ async function api(action){ // 서버 오류는 err.code 로: taken | device | s
   if (!r.ok) throw Object.assign(new Error(j.error || 'net'), { code:j.error || 'net' });
   return j;
 }
-const ERR = { taken:'이미 다른 기기에서 선물을 받은 이름이에요. 오웬에게 알려 주세요.', device:'이 기기에서는 이미 다른 이름으로 선물을 받았어요. 오웬에게 알려 주세요.',
+const ERR = { taken:'이 이름은 이미 선물을 받았어요. 처음 열었던 휴대폰과 앱(카톡·메일·브라우저)으로 다시 열면 받은 선물을 볼 수 있어요. 안 되면 오웬에게 알려 주세요.', device:'이 기기에서는 이미 다른 이름으로 선물을 받았어요. 오웬에게 알려 주세요.',
   input:'이름을 다시 확인해 주세요.', net:'연결이 잠깐 끊겼어요. 잠시 뒤 다시 눌러 주세요.', server:'연결이 잠깐 끊겼어요. 잠시 뒤 다시 눌러 주세요.' };
 const pics = {};
 function img(src){ return pics[src] ||= new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(i); i.src = src; }); }
