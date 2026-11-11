@@ -22,8 +22,8 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 
 /* 바탕: 마지막 장면을 흐리게 깔아 둔다 */
 .page{ position:relative; min-height:100dvh; max-width:480px; margin:0 auto; padding:calc(74px + env(safe-area-inset-top)) 16px calc(32px + env(safe-area-inset-bottom)); overflow:hidden }
-.page::before{ content:""; position:absolute; inset:-40px; background:url(assets/act4.webp) center 40%/cover; filter:blur(18px) brightness(.55) saturate(1.1); z-index:-2 }
-.page::after{ content:""; position:absolute; inset:0; background:radial-gradient(120% 70% at 50% 0%, rgba(255,190,120,.18), rgba(28,19,16,.6) 70%); z-index:-1 }
+.page::before{ content:""; position:fixed; inset:-40px; background:url(assets/act4.webp) center 40%/cover; filter:blur(18px) brightness(.55) saturate(1.1); z-index:-2 }
+.page::after{ content:""; position:fixed; inset:0; background:radial-gradient(120% 70% at 50% 0%, rgba(255,190,120,.18), rgba(28,19,16,.6) 70%); z-index:-1 }
 .demo{ margin:0 auto 12px; width:max-content; max-width:100%; background:#FFE08A; color:var(--ink); font-weight:900; font-size:12.5px; border-radius:999px; padding:5px 14px; box-shadow:0 3px 0 #D9A93E }
 
 .hero{ text-align:center; color:#fff; padding:28px 4px 22px; text-shadow:0 3px 18px rgba(0,0,0,.45) }
@@ -47,8 +47,24 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .chars button[aria-pressed="true"]{ background:#FFE1E8; transform:translateY(-3px); box-shadow:0 7px 0 #E86F86, 0 0 0 3px #FF8FA3 }
 .title img{ width:120px; height:160px; object-fit:contain; margin-bottom:6px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) }
 .res-top img{ display:block; width:96px; height:128px; object-fit:contain; margin:0 auto 6px; filter:drop-shadow(0 8px 16px rgba(0,0,0,.4)) }
-.giftbox{ margin-top:14px; text-align:center }
+.giftbox{ margin-top:22px; text-align:center }
 .giftbox img{ display:block; width:100%; max-width:300px; margin:0 auto 12px; border-radius:14px; box-shadow:0 8px 20px rgba(0,0,0,.18) }
+/* 시작 화면은 휴대폰·PC 모두 한 화면에: 높이에 따라 줄어든다 */
+#intro{ display:flex; flex-direction:column; justify-content:center; padding-top:calc(12px + env(safe-area-inset-top)); padding-bottom:calc(12px + env(safe-area-inset-bottom)) }
+#intro .demo{ margin-bottom:6px }
+#intro .hero{ padding:clamp(2px, 1.6vh, 22px) 4px clamp(10px, 2vh, 20px) }
+#intro .hero h1{ font-size:clamp(23px, 3.6vh, 30px); margin:6px 0 4px }
+#intro .hero p{ font-size:clamp(13px, 1.8vh, 14.5px) }
+#intro .card{ padding:clamp(14px, 2.2vh, 20px) 16px }
+#intro .card > p{ margin-bottom:clamp(8px, 1.4vh, 12px) }
+#intro .lbl{ margin:clamp(10px, 1.6vh, 16px) 0 6px }
+#intro .tabs button{ min-height:clamp(38px, 5vh, 44px) }
+#intro .chars{ display:flex; justify-content:center; gap:8px; margin-top:8px }
+#intro .chars button{ flex:0 1 calc(25% - 6px) }
+#intro .chars img{ width:100%; height:clamp(62px, 11vh, 112px); aspect-ratio:auto }
+#intro .big{ margin-top:clamp(12px, 1.8vh, 16px); min-height:clamp(50px, 6.6vh, 60px) }
+#intro .note{ margin-top:clamp(12px, 2vh, 18px) !important }
+#intro .foot{ margin-top:clamp(8px, 2vh, 22px) }
 .big{ display:block; width:100%; margin-top:16px; min-height:60px; border:0; border-radius:22px; font-size:18px; font-weight:900; color:var(--ink); cursor:pointer; touch-action:manipulation;
   background:linear-gradient(180deg,#FFC4CF,#FF8FA3); box-shadow:inset 0 -7px 0 rgba(160,40,80,.18), inset 0 5px 0 rgba(255,255,255,.55), 0 7px 0 #D9677C, 0 14px 22px rgba(217,103,124,.3);
   transition:transform .14s cubic-bezier(.3,1.7,.5,1), box-shadow .14s }
@@ -59,9 +75,15 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .btn:active{ transform:translateY(3px) }
 .btn.gold{ background:#FFE08A; box-shadow:inset 0 -4px 0 rgba(150,100,0,.16), inset 0 3px 0 rgba(255,255,255,.6), 0 5px 0 #D9A93E }
 .btn[disabled]{ opacity:.6; cursor:default }
+.mk{ display:grid; grid-template-columns:repeat(3, 1fr); gap:8px; margin-top:4px }
+.mk .btn{ flex-direction:column; gap:2px; min-height:64px; padding:8px 4px; line-height:1.25 }
+.mk .btn b{ font-size:14.5px; word-break:keep-all } .mk .btn small{ font-size:12px; font-weight:700; color:var(--ink2) }
+.note.left{ text-align:left }
+.big + .note, .mk + .note, .bar + .note{ margin-top:18px !important }
 .note{ margin:12px 0 0; text-align:center; font-size:12.5px; color:var(--ink2); word-break:keep-all }
 
 /* ── 이야기 무대 ── */
+#stage::before{ content:""; position:absolute; inset:-60px; background:var(--bg, none) center/cover; filter:blur(28px) brightness(.4); transition:background-image 1s }
 #stage{ position:fixed; inset:0; background:#000; z-index:5; user-select:none; -webkit-user-select:none; cursor:pointer; touch-action:manipulation }
 .view{ position:relative; height:100%; width:min(100%, 56.25dvh); margin:0 auto; overflow:hidden; container-type:size; background:#0d0907 }
 .frame{ position:absolute; --w:max(100cqw, 56.25cqh); width:var(--w); height:calc(var(--w) * 16 / 9); left:calc(50% - var(--w) / 2); top:calc(50% - var(--w) * 8 / 9);
@@ -158,13 +180,20 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .won .wlogo{ display:block; height:30px; max-width:90px; margin-top:8px; object-fit:contain; object-position:left center }
 .won b{ display:block; font-size:22px; line-height:1.3; margin:6px 0 2px; word-break:keep-all }
 .won small{ color:var(--ink2); font-size:13px; word-break:keep-all }
-.claim{ margin:14px 0 0; padding-top:12px; border-top:1px dashed rgba(107,84,70,.3); font-size:13.5px; color:var(--ink2); word-break:keep-all }
-.letter{ margin-top:22px; background:#FFFDF7; background-image:repeating-linear-gradient(180deg, transparent 0 31px, rgba(200,170,130,.18) 31px 32px); border-radius:24px; padding:22px 22px 20px;
-  box-shadow:inset 0 -5px 0 #F0E2C8, 0 6px 0 #E3CDA8, 0 18px 30px rgba(0,0,0,.25) }
-.letter h3{ margin:0 0 12px; font-size:18px; font-weight:900 }
-.letter p{ margin:0 0 12px; font-size:15.5px; line-height:1.9; color:#3E3026; word-break:keep-all }
-.letter .sign{ margin:18px 0 0; text-align:right; font-weight:800; color:var(--ink2); font-size:14px }
-.share{ margin-top:22px }
+.claim{ margin:16px 0 4px; padding-top:12px; border-top:1px dashed rgba(107,84,70,.3); font-size:13.5px; color:var(--ink2); word-break:keep-all }
+@font-face{ font-family:"Pen"; src:url(assets/pen.woff2) format("woff2"); font-display:swap }
+.letter{ --lh:34px; position:relative; margin:30px 2px 0; padding:26px 22px 22px 26px; border-radius:6px 6px 18px 6px; color:#3A2C22;
+  font-family:"Pen", var(--font); font-size:23px; line-height:var(--lh); transform:rotate(-.6deg);
+  background:linear-gradient(90deg, transparent 15px, rgba(232,120,120,.28) 15px 16px, transparent 16px),
+    repeating-linear-gradient(180deg, transparent 0 calc(var(--lh) - 1px), rgba(170,140,100,.24) calc(var(--lh) - 1px) var(--lh)) 0 26px / 100% var(--lh) repeat-y,
+    #FFFBF1;
+  box-shadow:0 1px 0 #EFE2C9, 0 10px 24px rgba(0,0,0,.28), 0 2px 4px rgba(0,0,0,.12) }
+.letter::before{ content:""; position:absolute; top:-12px; left:50%; width:118px; height:26px; transform:translateX(-50%) rotate(-3deg);
+  background:rgba(255,183,196,.78); box-shadow:0 1px 2px rgba(0,0,0,.08) }
+.letter h3{ margin:0; font-size:28px; font-weight:400; line-height:var(--lh) }
+.letter p{ margin:0; text-indent:1em; word-break:keep-all }
+.letter .sign{ margin-top:var(--lh); text-indent:0; text-align:right; font-size:22px; color:#6B5446 }
+.share{ margin-top:28px }
 .share h3{ margin:0 0 4px; font-size:17px; font-weight:900 }
 .row{ display:flex; flex-wrap:wrap; gap:10px }
 .out{ margin-top:16px; padding-top:14px; border-top:1px dashed rgba(107,84,70,.3) }
@@ -202,7 +231,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   </div>
   <form id="who" class="card" autocomplete="off">
     <h2>이름을 적어 주세요</h2>
-    <p>카드와 스토리 이미지에 들어가요. 한 분께 한 번, 꽝은 없어요.</p>
+    <p>한 분께 한 번, 꽝은 없어요.</p>
     <input id="name" class="field" type="text" maxlength="12" placeholder="내 이름" aria-label="내 이름" enterkeyhint="done">
     <p class="lbl">나와 닮은 캐릭터를 골라 주세요</p>
     <div class="tabs" role="group" aria-label="성별"><button type="button" data-g="m" aria-pressed="true">남자</button><button type="button" data-g="f" aria-pressed="false">여자</button></div>
@@ -267,24 +296,25 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   <article class="letter">
     <h3><span data-name></span> 님께</h3>
     <p>누군가의 성장을 돕는 일은 좀처럼 티가 나지 않아요. 먼 길을 다녀오고 밤늦게까지 서류를 붙들어도, 박수는 늘 무대 위의 사람에게 돌아갔죠.</p>
-    <p>그래도 저는 알아요. 그 덕분에 바다를 건너간 우리 물건이 있고, 다시 불이 켜진 사업장이 있고, 새 기회를 만나 한 걸음 나아간 분들이 있다는 걸요.</p>
-    <p>알아주는 사람이 없어도 묵묵히 해내 주셔서 정말 고맙습니다. <span data-name></span> 님은 누군가에게 희망의 실마리였어요.</p>
+    <p>그래도 저는 알아요. 우리 수출기업이 낯선 바다 건너 바이어를 처음 만나기까지, 작은 사업장이 새 판로를 찾고 다시 일어서기까지, 그 뒤에는 늘 초원이 있었다는 걸요.</p>
+    <p>지역 곳곳을 발로 뛰며 현장의 이야기를 듣고, 그 이야기를 사업으로 바꾸고, 맡은 일을 끝까지 챙기는 일. 그렇게 지역 경제에 숨을 불어넣는 일을 여러분이 해 오셨어요. 그 덕분에 바다를 건너간 우리 물건이 있고, 다시 불이 켜진 사업장이 있고, 새 기회를 만나 한 걸음 나아간 분들이 있어요.</p>
+    <p>알아주는 사람이 없어도 묵묵히 해내 주셔서 정말 고맙습니다. <span data-name></span> 님은 누군가에게 분명 희망의 실마리였어요.</p>
     <p>오늘도 정말 고생했고, 수고했어요. 바쁜 하루지만 붉게 물든 단풍도 한번 보고, 디저트로 달달한 오후 보내세요. 앞으로도 곁에서 함께할게요.</p>
     <p class="sign" id="sign"></p>
   </article>
   <div class="card share">
     <h3>인스타그램에 올리기</h3>
     <p>스토리 크기(1080×1920)로 만들어 드려요. 영상에는 배경 음악도 들어가요.</p>
-    <div class="row">
-      <button class="btn gold" type="button" data-mk="img">스토리 이미지</button>
-      <button class="btn" type="button" data-mk="short">짧은 영상 (9초)</button>
-      <button class="btn" type="button" data-mk="full">이야기 전체 영상 (30초)</button>
+    <div class="mk">
+      <button class="btn gold" type="button" data-mk="img"><b>스토리 이미지</b><small>사진 한 장</small></button>
+      <button class="btn" type="button" data-mk="short"><b>짧은 영상</b><small>9초</small></button>
+      <button class="btn" type="button" data-mk="full"><b>전체 영상</b><small>이야기 30초</small></button>
     </div>
     <div class="bar" id="bar" hidden><i id="barI"></i></div>
-    <p class="note" id="mkNote">공유하기를 누르고 인스타그램을 고르면 스토리에 바로 올릴 수 있어요. 목록에 없으면 내려받은 뒤 인스타그램에서 올려 주세요.</p>
+    <p class="note left" id="mkNote">공유하기에서 인스타그램을 고르면 스토리에 바로 올라가요. 목록에 없으면 내려받은 뒤 올려 주세요.</p>
     <div id="outs"></div>
   </div>
-  <div class="row" style="margin-top:18px">
+  <div class="row" style="margin-top:22px">
     <button class="btn" type="button" id="replay">이야기 다시 보기</button>
     <button class="btn" type="button" id="again" hidden>처음부터 다시 (시연)</button>
   </div>
@@ -475,7 +505,7 @@ async function go(i){
   await wait(REDUCE ? 400 : 750);
   $('#title').style.opacity = 0;
   const A = ACTS[i]; act = i; shown = 0;
-  shot.src = (await img(A.img)).src;
+  shot.src = (await img(A.img)).src; stage.style.setProperty('--bg', `url(${A.img})`); // PC에서 양옆을 흐린 장면으로
   frame.style.transition = 'none'; frame.style.transformOrigin = `${A.o[0]}% ${A.o[1]}%`;
   const s0 = REDUCE ? 1.03 : A.s[0], s1 = REDUCE ? 1.03 : A.s[1];
   frame.style.transform = `scale(${s0})`;
@@ -701,7 +731,7 @@ async function drawStory(c, t, mode = 'short'){
   text(c, '2026. 11. 11', W / 2, 1806, 32, 700, '#FFD9A8');
   c.restore();
 }
-const LABEL = { img:'스토리 이미지', short:'짧은 영상 (9초)', full:'이야기 전체 영상 (30초)' };
+const LABEL = { img:'스토리 이미지', short:'짧은 영상 (9초)', full:'전체 영상 (이야기 30초)' };
 function offer(blob, ext, kind){ // 만든 것마다 미리보기 + 공유 + 내려받기
   const file = new File([blob], `chowon-1111-${kind}-${me.name}.${ext}`, { type:blob.type }), url = URL.createObjectURL(blob);
   document.querySelector(`.out[data-k="${kind}"]`)?.remove();
@@ -750,14 +780,14 @@ async function makeVideo(onp, actx, mode = 'short'){ // actx: 버튼을 누른 �
 window.__story = { makeImage, makeVideo, makeMusic }; // 점검용
 const mks = [...document.querySelectorAll('[data-mk]')];
 mks.forEach(b => b.onclick = async () => {
-  const kind = b.dataset.mk, actx = kind !== 'img' && AC ? new AC() : null, label = b.textContent;
+  const kind = b.dataset.mk, actx = kind !== 'img' && AC ? new AC() : null, label = b.innerHTML;
   mks.forEach(x => x.disabled = true);
   try {
     if (kind === 'img') offer(await makeImage(), 'png', kind);
-    else { $('#bar').hidden = false; $('#barI').style.width = '0'; b.textContent = '만드는 중… 화면을 켜 두세요';
+    else { $('#bar').hidden = false; $('#barI').style.width = '0'; b.innerHTML = '<b>만드는 중…</b><small>화면을 켜 두세요</small>';
       const v = await makeVideo(p => $('#barI').style.width = Math.min(100, p * 100) + '%', actx, kind); offer(v.blob, v.ext, kind); }
   } catch { toast(kind === 'img' ? '이미지를 만들지 못했어요' : '이 브라우저는 영상 만들기를 못 해요. 이미지로 남겨 주세요'); }
-  mks.forEach(x => x.disabled = false); $('#bar').hidden = true; b.textContent = label;
+  mks.forEach(x => x.disabled = false); $('#bar').hidden = true; b.innerHTML = label;
 });
 </script>
 </body>
