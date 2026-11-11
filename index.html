@@ -420,7 +420,7 @@ async function go(i){
   const s0 = REDUCE ? 1.03 : A.s[0], s1 = REDUCE ? 1.03 : A.s[1];
   frame.style.transform = `scale(${s0})`;
   $('#glow').style.left = A.glow[0] + '%'; $('#glow').style.top = A.glow[1] + '%';
-  cap.innerHTML = A.lines.map((l, k) => `<p class="${k === A.lines.length - 1 && i >= 2 ? 'em' : ''}">${l.replace('|', ' ')}</p>`).join('');
+  cap.innerHTML = A.lines.map((l, k) => `<p class="${k === A.lines.length - 1 && i >= 2 ? 'em' : ''}">${l.replace('|', '<br>')}</p>`).join('');
   const dur = LINE_T0 + A.lines.length * LINE_GAP + HOLD;
   frame.offsetWidth;
   frame.style.transition = `transform ${dur + 1500}ms cubic-bezier(.37,0,.63,1)`; frame.style.transform = `scale(${s1})`;
