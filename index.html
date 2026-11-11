@@ -203,12 +203,11 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   <form id="who" class="card" autocomplete="off">
     <h2>이름을 적어 주세요</h2>
     <p>카드와 스토리 이미지에 들어가요. 한 분께 한 번, 꽝은 없어요.</p>
-    <input id="name" class="field" type="text" maxlength="12" placeholder="내 이름" aria-label="내 이름" enterkeyhint="next">
+    <input id="name" class="field" type="text" maxlength="12" placeholder="내 이름" aria-label="내 이름" enterkeyhint="done">
     <p class="lbl">나와 닮은 캐릭터를 골라 주세요</p>
     <div class="tabs" role="group" aria-label="성별"><button type="button" data-g="m" aria-pressed="true">남자</button><button type="button" data-g="f" aria-pressed="false">여자</button></div>
     <div class="chars" id="chars"></div>
-    <div id="codeBox"><p class="lbl">참여 코드</p>
-    <input id="code" class="field" type="text" maxlength="20" placeholder="단톡방에서 받은 코드" aria-label="참여 코드" autocomplete="off" enterkeyhint="go"></div>
+
     <button class="big" type="submit" id="goBtn">이야기 시작하기</button>
     <p class="note">1분 남짓 걸려요. 화면을 누르면 다음으로 넘어가요.</p>
   </form>
@@ -348,15 +347,15 @@ let me = { name:'', prize:null, char:'m1', code:'', gift:null };
 const DEVICE = (() => { const k = KEY + '-device'; let d; try { d = localStorage.getItem(k); } catch {}
   if (!d){ d = [...crypto.getRandomValues(new Uint8Array(12))].map(x => x.toString(16).padStart(2, '0')).join(''); try { localStorage.setItem(k, d); } catch {} }
   return d; })();
-async function api(action){ // 서버 오류는 err.code 로: code(참여 코드) | taken | soldout | net
+async function api(action){ // 서버 오류는 err.code 로: taken | device | soldout | net
   let r;
-  try { r = await fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action, name:me.name, code:me.code, device:DEVICE }) }); }
+  try { r = await fetch(API, { method:'POST', headers:{ 'Content-Type':'application/json' }, body:JSON.stringify({ action, name:me.name, device:DEVICE }) }); }
   catch { throw Object.assign(new Error('net'), { code:'net' }); }
   const j = await r.json().catch(() => ({}));
   if (!r.ok) throw Object.assign(new Error(j.error || 'net'), { code:j.error || 'net' });
   return j;
 }
-const ERR = { code:'참여 코드가 맞지 않아요. 단톡방의 코드를 확인해 주세요.', taken:'이미 다른 기기에서 선물을 받은 이름이에요. 오웬에게 알려 주세요.',
+const ERR = { taken:'이미 다른 기기에서 선물을 받은 이름이에요. 오웬에게 알려 주세요.', device:'이 기기에서는 이미 다른 이름으로 선물을 받았어요. 오웬에게 알려 주세요.',
   input:'이름을 다시 확인해 주세요.', net:'연결이 잠깐 끊겼어요. 잠시 뒤 다시 눌러 주세요.', server:'연결이 잠깐 끊겼어요. 잠시 뒤 다시 눌러 주세요.' };
 const pics = {};
 function img(src){ return pics[src] ||= new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(i); i.src = src; }); }
@@ -430,13 +429,11 @@ document.querySelectorAll('[data-g]').forEach(b => b.onclick = () => drawChars(b
 $('#chars').onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; me.char = b.dataset.c;
   $('#chars').querySelectorAll('[data-c]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); };
 drawChars('m');
-$('#codeBox').hidden = DEMO;
 $('#who').onsubmit = async e => {
   e.preventDefault();
-  const n = $('#name').value.trim().replace(/\s+/g, ' ').slice(0, 12), code = $('#code').value.trim();
+  const n = $('#name').value.trim().replace(/\s+/g, ' ').slice(0, 12);
   if (!n){ toast('이름을 적어 주세요'); $('#name').focus(); return; }
-  if (!DEMO && !code){ toast('참여 코드를 적어 주세요'); $('#code').focus(); return; }
-  me.name = n; me.code = code; bgm.start(); // 누른 순간에 켜야 아이폰에서도 소리가 나요
+  me.name = n; bgm.start(); // 누른 순간에 켜야 아이폰에서도 소리가 나요
   if (!DEMO){
     const b = $('#goBtn'); b.disabled = true; b.textContent = '확인하는 중…';
     try {
