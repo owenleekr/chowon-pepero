@@ -501,8 +501,6 @@ $('#who').onsubmit = async e => {
   }
   startStory();
 };
-const saved = load();
-if (saved && saved.name){ me = { ...me, name:saved.name, char:saved.char || 'm1', code:saved.code || '', prize:PRIZES.find(p => p.id === saved.prize) || SOLDOUT }; showResult(true); }
 ACTS.forEach(a => img(a.img));
 
 /* ===== 이야기 진행 ===== */
@@ -836,6 +834,9 @@ async function makeVideo(onp, actx, mode = 'short'){ // actx: 버튼을 누른 �
   return { blob:new Blob(chunks, { type:type.split(';')[0] }), ext:type.includes('mp4') ? 'mp4' : 'webm' };
 }
 window.__story = { makeImage, makeVideo, makeMusic }; // 점검용
+// 이미 열어 본 기기는 결과 화면으로. 모든 선언이 끝난 뒤에 불러야 한다(앞에서 부르면 stage 초기화 전이라 빈 화면이 됨)
+const saved = load();
+if (saved && saved.name){ me = { ...me, name:saved.name, char:saved.char || 'm1', code:saved.code || '', prize:PRIZES.find(p => p.id === saved.prize) || SOLDOUT }; showResult(true); }
 const mks = [...document.querySelectorAll('[data-mk]')];
 mks.forEach(b => b.onclick = async () => {
   const kind = b.dataset.mk, actx = kind !== 'img' && AC ? new AC() : null, label = b.innerHTML;
