@@ -113,10 +113,6 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .title > *{ opacity:0; transform:translateY(8px); transition:opacity 1.2s ease, transform 1.4s ease }
 .title.on > *{ opacity:1; transform:none } .title.on > :nth-child(3){ transition-delay:.5s } .title.on > :nth-child(4){ transition-delay:1.1s }
 
-.frame img.hero{ inset:auto; width:auto; object-fit:contain; transform:translate(-50%, -100%); filter:drop-shadow(0 1.2vh 1.4vh rgba(0,0,0,.4));
-  opacity:0; transition:opacity .8s ease; animation:bob 1.2s ease-in-out infinite; pointer-events:none }
-.frame img.hero.on{ opacity:1 }
-@keyframes bob{ 0%,100%{ translate:0 0 } 50%{ translate:0 -1.5% } }
 .bub{ position:absolute; transform:translate(-50%, -100%) scale(.4); transform-origin:50% 100%; opacity:0; z-index:2; pointer-events:none;
   background:#FFFDF6; color:#3A2C22; font-family:"Pen", var(--font); font-size:calc(var(--w) * .064); line-height:1.2; padding:.3em .75em .38em; border-radius:.9em;
   box-shadow:0 .25em .8em rgba(0,0,0,.32); white-space:nowrap; transition:opacity .35s ease, transform .7s cubic-bezier(.3,1.7,.45,1) }
@@ -204,6 +200,10 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 .letter p{ margin:0; text-indent:1em; word-break:keep-all }
 .letter .sign{ margin-top:var(--lh); text-indent:0; text-align:right; font-size:22px; color:#6B5446 }
 .share{ margin-top:28px }
+.pickle{ margin-top:28px } .pickle h3{ margin:0 0 4px; font-size:17px; font-weight:900 }
+.pickle .invite{ display:flex; align-items:center; gap:8px; margin:0 0 14px; font-size:14px; color:var(--ink2) }
+.pickle .invite b{ font-size:18px; letter-spacing:.08em; color:var(--ink); background:#fff; border-radius:10px; padding:4px 10px; box-shadow:inset 0 2px 4px rgba(60,30,20,.1) }
+.copy{ border:0; border-radius:10px; min-height:36px; padding:0 12px; font-size:13px; font-weight:800; background:#F3E6CF; color:var(--ink); cursor:pointer }
 .share h3{ margin:0 0 4px; font-size:17px; font-weight:900 }
 .row{ display:flex; flex-wrap:wrap; gap:10px }
 .out{ margin-top:16px; padding-top:14px; border-top:1px dashed rgba(107,84,70,.3) }
@@ -220,7 +220,7 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
 #rec{ position:fixed; left:0; top:0; width:2px; height:2px; opacity:0; pointer-events:none }
 
 @media (prefers-reduced-motion: reduce){
-  .chars button{ transition:none } .frame img.hero{ animation:none } .bub{ transition:opacity .3s }
+  .chars button{ transition:none } .bub{ transition:opacity .3s }
   .glow, .gift::before, .gift::after, .rays, .prize.float{ animation:none }
   .cap p{ filter:none; transform:none; transition:opacity .6s ease }
   .title > *{ transform:none }
@@ -259,7 +259,6 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
     <div class="frame" id="frame">
       <img id="shot" alt="">
       <div class="glow" id="glow"></div>
-      <img class="hero" id="hero" alt="">
       <div class="bub" data-b="0"></div><div class="bub" data-b="1"></div><div class="bub wide" data-b="2"></div>
       <button class="gift" type="button" style="left:30%;top:62%" aria-label="왼쪽 분의 선물"></button>
       <button class="gift" type="button" style="left:53.5%;top:57.5%" aria-label="가운데 분의 선물"></button>
@@ -308,8 +307,8 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   <article class="letter">
     <h3><span data-name></span> 님께</h3>
     <p>누군가의 성장을 돕는 일은 좀처럼 티가 나지 않아요. 먼 길을 다녀오고 밤늦게까지 서류를 붙들어도, 박수는 늘 무대 위의 사람에게 돌아갔죠.</p>
-    <p>그래도 저는 알아요. 우리 수출기업이 낯선 바다 건너 바이어를 처음 만나기까지, 작은 사업장이 새 판로를 찾고 다시 일어서기까지, 그 뒤에는 늘 초원이 있었다는 걸요.</p>
-    <p>지역 곳곳을 발로 뛰며 현장의 이야기를 듣고, 그 이야기를 사업으로 바꾸고, 맡은 일을 끝까지 챙기는 일. 그렇게 지역 경제에 숨을 불어넣는 일을 여러분이 해 오셨어요. 그 덕분에 바다를 건너간 우리 물건이 있고, 다시 불이 켜진 사업장이 있고, 새 기회를 만나 한 걸음 나아간 분들이 있어요.</p>
+    <p>그래도 저는 알아요. 우리 수출기업이 낯선 바다 건너 바이어를 처음 만나기까지, 땀 흘려 키운 농산물이 제값을 받고 지역 농가에 다시 활기가 돌기까지, 작은 사업장이 새 판로를 찾고 다시 일어서기까지, 그 뒤에는 늘 초원이 있었다는 걸요.</p>
+    <p>지역 곳곳을 발로 뛰며 현장의 이야기를 듣고, 그 이야기를 사업으로 바꾸고, 맡은 일을 끝까지 챙기는 일. 그렇게 지역 농가를 살리고 지역 경제가 다시 일어서도록 돕는 일을 여러분이 해 오셨어요. 그 덕분에 바다를 건너간 우리 물건이 있고, 다시 불이 켜진 사업장과 활기를 되찾은 마을이 있고, 새 기회를 만나 한 걸음 나아간 분들이 있어요.</p>
     <p>알아주는 사람이 없어도 묵묵히 해내 주셔서 정말 고맙습니다. <span data-name></span> 님은 누군가에게 분명 희망의 실마리였어요.</p>
     <p>오늘도 정말 고생했고, 수고했어요. 바쁜 하루지만 붉게 물든 단풍도 한번 보고, 디저트로 달달한 오후 보내세요. 앞으로도 곁에서 함께할게요.</p>
     <p class="sign" id="sign"></p>
@@ -329,6 +328,15 @@ button:focus-visible, input:focus-visible, a:focus-visible{ outline:3px solid #F
   <div class="row" style="margin-top:22px">
     <button class="btn" type="button" id="replay">이야기 다시 보기</button>
     <button class="btn" type="button" id="again" hidden>처음부터 다시 (시연)</button>
+  </div>
+  <div class="card pickle">
+    <h3>요즘 핫한 AI, 피클도 써 보세요</h3>
+    <p>나만의 AI 에이전트, 피클에 초대해요. 피클 앱에서 친구가 되면 서로의 피클끼리 이야기할 수 있어요.</p>
+    <p class="invite">초대 코드 <b>7NBH66</b> <button type="button" class="copy" id="copyCode">복사</button></p>
+    <div class="row">
+      <a class="btn gold" href="https://pickle.com/join" target="_blank" rel="noopener">피클 써 보기</a>
+      <a class="btn" href="https://www.koreadaily.com/article/20261110014040989" target="_blank" rel="noopener">피클 기사 보기</a>
+    </div>
   </div>
   <p class="foot">초원지역전략연구소 · 2026. 11. 11</p>
 </main>
@@ -351,8 +359,10 @@ const CLAIM = '아래 버튼으로 내 기프티콘을 보고 내려받을 수 �
 const API = 'https://chowon-pepero-api.vercel.app/api/gift';
 const CHARS = { m:['m1', 'm2', 'm3', 'm4'], f:['f1', 'f2', 'f3'] };
 const charSrc = c => `assets/ch-${c}.webp`;
-// 장면마다 내 캐릭터가 서는 자리 [가로 중심 %, 발 위치 %, 키 %] (그림 속 주인공을 덮는 자리)
-const HERO = [[41, 59, 41], [70, 75, 42], [36, 84, 26], [49, 97, 34]];
+// 1·2장(지도·밤 책상)은 고른 캐릭터가 주인공인 그림을 따로 그려 뒀어요(act1-m1.webp …)
+const actImg = i => i < 2 ? `assets/act${i + 1}-${me.char}.webp` : ACTS[i].img;
+// 폴라로이드로 자를 때의 중심 [가로 %, 세로 %]
+const FOCUS = [[48, 52], [55, 50], [55, 50]];
 // 마지막 장면 말풍선 [가로 %, 꼬리 끝 세로 %]
 const BUBS = [[25, 43], [60, 39], [50, 31]];
 const thanks = () => ['고마워요', '덕분이에요', `${me.name} 님이 없었으면|우리도 성장할 수 없었어요`];
@@ -362,11 +372,11 @@ const KEY = 'chowon-pepero-1111';
 /* ===== 이야기 ===== */
 const ACTS = [
   { img:'assets/act1.webp', o:[42,40], s:[1.0,1.16], glow:[88,5],
-    lines:['오늘은 남쪽 바닷가, 내일은 동쪽 항구.', '누군가의 첫걸음을 돕기 위해|전국을 누비셨어요.'] },
+    lines:['오늘은 남쪽 바닷가, 내일은 동쪽 항구.', '수출기업과 지역 농가의 첫걸음을 돕기 위해|전국을 누비셨어요.'] },
   { img:'assets/act2.webp', o:[52,52], s:[1.0,1.14], glow:[36,45],
     lines:['모두 잠든 밤에도 꺼지지 않던 책상 불빛.', '서류 한 장이 누군가에겐|내일이라는 걸 아셨으니까요.'] },
   { img:'assets/act3.webp', o:[66,45], s:[1.16,1.0], glow:[78,17],
-    lines:['그 밤들이 모여 항구에 불이 켜졌어요.', '우리 물건을 실은 배가 바다를 건너고,|멈춰 있던 사업장에 다시 웃음이 돌았어요.', '박수는 늘 무대 위로 향했지만,|그 길을 밝힌 건 여러분이었어요.'] },
+    lines:['그 밤들이 모여 항구에 불이 켜졌어요.', '우리 물건을 실은 배가 바다를 건너고,|지역 농가와 사업장에 다시 웃음이 돌았어요.', '박수는 늘 무대 위로 향했지만,|그 길을 밝힌 건 여러분이었어요.'] },
   { img:'assets/act4.webp', o:[50,62], s:[1.14,1.03], glow:[4,20],
     lines:['앞만 보고 달리느라 미처 몰랐어요.', '뒤돌아보니, 여러분이 도운 분들이|작은 선물을 들고 서 있어요.'] },
 ];
@@ -510,10 +520,10 @@ async function startStory(){
   $('#intro').hidden = true; $('#result').hidden = true; $('#open').hidden = true; stage.hidden = false;
   prog.innerHTML = '<i><b></b></i>'.repeat(ACTS.length + 1);
   gifts.forEach(g => g.className = 'gift'); choosing = false; busy = false; act = -1; clear(); cap.innerHTML = '';
-  $('#tname').textContent = `${me.name} 님께`; $('#tchar').src = charSrc(me.char); $('#hero').src = charSrc(me.char);
+  $('#tname').textContent = `${me.name} 님께`; $('#tchar').src = charSrc(me.char); [0, 1].forEach(i => img(actImg(i)));
   thanks().forEach((t, k) => { const b = document.querySelector(`.bub[data-b="${k}"]`); b.innerHTML = t.replace('|', '<br>'); b.style.left = BUBS[k][0] + '%'; b.style.top = BUBS[k][1] + '%'; b.classList.remove('on'); });
   const t = $('#title'); t.style.opacity = 1; t.classList.remove('on'); fade.style.transition = 'none'; fade.style.opacity = 0;
-  await img(ACTS[0].img);
+  await img(actImg(0));
   requestAnimationFrame(() => t.classList.add('on'));
   bar(0, 4200); later(() => go(0), 4200);
 }
@@ -523,13 +533,11 @@ async function go(i){
   await wait(REDUCE ? 400 : 750);
   $('#title').style.opacity = 0;
   const A = ACTS[i]; act = i; shown = 0;
-  shot.src = (await img(A.img)).src; stage.style.setProperty('--bg', `url(${A.img})`); // PC에서 양옆을 흐린 장면으로
+  shot.src = (await img(actImg(i))).src; stage.style.setProperty('--bg', `url(${actImg(i)})`); // PC에서 양옆을 흐린 장면으로
   frame.style.transition = 'none'; frame.style.transformOrigin = `${A.o[0]}% ${A.o[1]}%`;
   const s0 = REDUCE ? 1.03 : A.s[0], s1 = REDUCE ? 1.03 : A.s[1];
   frame.style.transform = `scale(${s0})`;
   $('#glow').style.left = A.glow[0] + '%'; $('#glow').style.top = A.glow[1] + '%';
-  const H = HERO[i], hero = $('#hero'); hero.classList.remove('on');
-  Object.assign(hero.style, { left:H[0] + '%', top:H[1] + '%', height:H[2] + '%', filter:i === 1 ? 'brightness(.82) saturate(.9) drop-shadow(0 1.2vh 1.4vh rgba(0,0,0,.4))' : '' });
   document.querySelectorAll('.bub').forEach(b => b.classList.remove('on'));
   cap.innerHTML = A.lines.map((l, k) => `<p class="${k === A.lines.length - 1 && i >= 2 ? 'em' : ''}">${l.replace('|', '<br>')}</p>`).join('');
   const dur = LINE_T0 + A.lines.length * LINE_GAP + HOLD;
@@ -539,7 +547,6 @@ async function go(i){
   bar(i + 1, dur); $('#skip').hidden = i === ACTS.length - 1; $('#skip').className = 'skip'; $('#skip').textContent = '화면을 누르면 넘어가요';
   busy = false;
   A.lines.forEach((_, k) => later(showLine, LINE_T0 + k * LINE_GAP));
-  later(() => hero.classList.add('on'), REDUCE ? 0 : 500);
   if (i < ACTS.length - 1) later(next, dur);
   else { const t0 = LINE_T0 + A.lines.length * LINE_GAP; [0, 1, 2].forEach(k => later(() => showBub(k), t0 + k * 1100)); later(offerGifts, t0 + 3 * 1100 + 900); }
 }
@@ -632,6 +639,7 @@ function showResult(returning){
   $('#again').hidden = !DEMO; $('#outs').innerHTML = ''; $('#bar').hidden = true;
   scrollTo(0, 0);
 }
+$('#copyCode').onclick = async () => { try { await navigator.clipboard.writeText('7NBH66'); toast('초대 코드를 복사했어요'); } catch { toast('초대 코드: 7NBH66'); } };
 $('#replay').onclick = () => { bgm.start(); startStory(); };
 $('#giftBtn').onclick = async () => {
   if (DEMO){ toast('시연 모드에서는 기프티콘이 나오지 않아요'); return; }
@@ -684,12 +692,6 @@ function scene(c, i, A, CH, z, t, bub){
   const W = 1080, H = 1920, o = ACTS[i].o;
   c.save(); c.translate((W - W * z) * o[0] / 100, (H - H * z) * o[1] / 100); c.scale(z, z);
   c.drawImage(A[i], 0, 0, W, H);
-  if (CH.naturalWidth){
-    const [cx, by, hp] = HERO[i], h = H * hp / 100, w = CH.naturalWidth * h / CH.naturalHeight, bob = REDUCE ? 0 : Math.sin(t * 5.5) * 9;
-    c.save(); c.shadowColor = 'rgba(0,0,0,.38)'; c.shadowBlur = 28; c.shadowOffsetY = 14;
-    c.drawImage(CH, W * cx / 100 - w / 2, H * by / 100 - h + bob, w, h); c.restore();
-    if (i === 1){ c.fillStyle = 'rgba(20,30,70,.18)'; c.fillRect(W * cx / 100 - w / 2, H * by / 100 - h + bob, w, h); } // 밤 장면 톤 맞춤
-  }
   if (bub) thanks().forEach((s, k) => bubble(c, s, W * BUBS[k][0] / 100, H * BUBS[k][1] / 100, k === 2 ? 58 : 64, bub[k]));
   c.restore();
 }
@@ -698,7 +700,7 @@ function polaroids(A, CH){ // 장면 3장을 정사각 사진으로(캐릭터 �
   const key = me.char; if (polaroidCache[key]) return polaroidCache[key];
   return polaroidCache[key] = [0, 1, 2].map(i => {
     const full = document.createElement('canvas'); full.width = 1080; full.height = 1920; scene(full.getContext('2d'), i, A, CH, 1, 0, null);
-    const [cx, by, hp] = HERO[i], side = 900, sx = clamp(1080 * cx / 100 - side / 2, 0, 1080 - side), sy = clamp(1920 * (by - hp * .55) / 100 - side / 2, 0, 1920 - side);
+    const [fx, fy] = FOCUS[i], side = 900, sx = clamp(1080 * fx / 100 - side / 2, 0, 1080 - side), sy = clamp(1920 * fy / 100 - side / 2, 0, 1920 - side);
     const sq = document.createElement('canvas'); sq.width = sq.height = 520; sq.getContext('2d').drawImage(full, sx, sy, side, side, 0, 0, 520, 520); return sq;
   });
 }
@@ -731,7 +733,7 @@ function collage(c, k, A, CH, sp){ // k: 콜라주가 시작된 뒤 초, sp: 빠
     c.font = `52px ${PEN}`; c.fillText(`${me.name} 님께`, -395, -190);
     c.font = `44px ${PEN}`;
     const body = ['누군가의 성장을 돕는 일은 좀처럼 티가 나지 않아요.', '먼 길을 다녀오고 밤늦게까지 서류를 붙들어도, 박수는 늘 무대 위로 향했죠.',
-      `그래도 저는 알아요. 그 뒤에는 늘 ${me.name} 님이 있었다는 걸요.`, '오늘은 단풍도 보고, 달달한 오후 보내세요. 늘 고맙습니다.'].flatMap(l => l.split('|')).flatMap(l => wrap(c, l, 800));
+      `수출기업이 바다를 건너고 지역 농가와 마을에 활기가 돌기까지, 그 뒤에는 늘 ${me.name} 님이 있었어요.`, '오늘은 단풍도 보고, 달달한 오후 보내세요. 늘 고맙습니다.'].flatMap(l => l.split('|')).flatMap(l => wrap(c, l, 800));
     body.slice(0, 7).forEach((l, n) => c.fillText(l, -395, -128 + n * 62));
     c.textAlign = 'right'; c.font = `40px ${PEN}`; c.fillStyle = '#6B5446'; c.fillText('오웬 드림', 395, 300);
     c.restore();
@@ -739,7 +741,7 @@ function collage(c, k, A, CH, sp){ // k: 콜라주가 시작된 뒤 초, sp: 빠
   c.globalAlpha = a(2.8, .6); text(c, '초원지역전략연구소', W / 2, 1806, 44, 900, '#fff'); text(c, '2026. 11. 11', W / 2, 1858, 30, 700, '#FFD9A8'); c.globalAlpha = 1;
 }
 async function drawStory(c, t, mode = 'short'){
-  const W = 1080, H = 1920, A = await Promise.all(ACTS.map(a => img(a.img))), CH = await img(charSrc(me.char));
+  const W = 1080, H = 1920, A = await Promise.all(ACTS.map((a, i) => img(actImg(i)))), CH = await img(charSrc(me.char));
   await document.fonts.load(`44px ${PEN}`).catch(() => {});
   const M = MODES[mode], full = mode === 'full', END = M.pre + M.segs.reduce((a, b) => a + b, 0);
   c.save(); c.clearRect(0, 0, W, H); c.textAlign = 'center'; c.textBaseline = 'alphabetic';
